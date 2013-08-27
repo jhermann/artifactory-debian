@@ -50,8 +50,9 @@ In the Artifactory web interface, the final result will look like this…
 
 For the Debian repositories to work together with `apt-get`, some index data needs
 to be generated; this is what the script `deb-index.sh` does. The script and a
-configuration example can be found in the `indexing` directory. The following diagram
-shows a typical setup and how the components interact.
+configuration example can be found in the 
+[indexing](https://github.com/jhermann/artifactory-debian/tree/master/indexing) directory.
+The following diagram shows a typical setup and how the components interact.
 
 ![Configuration & Data Flow](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/data-flow.png)
 
