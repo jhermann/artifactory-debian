@@ -62,7 +62,7 @@ The index host needs some software and configuration added,
 for that simply call the script with the `setup` argument like this:
 
 ```sh
-sudo deb-index.sh setup http://repo.example.com/artifactory/
+sudo ./deb-index.sh setup "http://repo.example.com/artifactory/"
 ```
 
 This installs the necessary tool packages, and adds a DAVFS mount to `/etc/fstab` and credentials to
@@ -77,7 +77,7 @@ to subdirectories (`work` and `tmp`).
 After finishing your configuration, you can create the Debian index files and upload them to Artifactory, by calling
 
 ```sh
-deb-index.sh refresh http://repo.example.com/artifactory/
+./deb-index.sh refresh "http://repo.example.com/artifactory/"
 ```
 
 in any normal user account (e.g. that of your continuous integration server, see the next section for a practical Jenkins example). 
