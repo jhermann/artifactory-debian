@@ -99,7 +99,7 @@ let the Jenkins job check that out, and then run a *Shell Build Step* like follo
 The upload credentials are preferably injected into the job's environment using the `EnvInject` plugin,
 so that they never appear in any console logs or other reports. 
 For that, add the `ARTIFACTORY_CREDENTIALS` environment variable
-to the "*Inject passwords to the build as environment variables*" setting of "*Build Environment*". 
+to the *Inject passwords to the build as environment variables* setting of *Build Environment*. 
 
 Jenkins also allows you to trigger the index generation via a simple `curl` call or similar, using the Jenkins REST API.
 
