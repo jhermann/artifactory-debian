@@ -49,18 +49,21 @@ In the Artifactory web interface, the final result will look like this…
 
 For the Debian repositories to work together with `apt-get`, some index data needs
 to be generated; this is what the script `deb-index.sh` does. The script and a
-configuration example can be found in the `indexing` directory.
+configuration example can be found in the `indexing` directory. The following diagram
+shows a typical setup and how the components interact.
 
-You can use any host that has access to your Artifactory server for that, either via
-a crontab entry, or by a job on a continuous integration server. 
-The index hosts needs some configuration added too, 
+![Configuration & Data Flow](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/data-flow.png)
+
+You can use any host that has access to your Artifactory server for indexing, and 
+run the index task via either a crontab entry, or as a job on a continuous integration server. 
+The index host needs some software and configuration added, 
 for that simply call the script with the `setup` argument like this:
 
     sudo deb-index.sh setup http://repo.example.com/artifactory/
 
 This installs the necessary tool packages, and adds a DAVFS mount to `/etc/fstab` and credentials to
-`/etc/davfs2/secrets` (note that `vi` is called automatically to allow you to fill in the correct password 
-for read-only access).
+`/etc/davfs2/secrets`. Your configured editor is called automatically to allow you 
+to fill in the Artifactory credentials for read-only access.
 
 Next, describe your repositories in the `apt-ftparchive.conf` and `repo-«reponame».conf` configuration files;
 see the provided examples and `man apt-ftparchive` for details.
