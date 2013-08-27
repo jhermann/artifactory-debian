@@ -11,6 +11,7 @@ and deploy DEB packages to it.
 	- [Using Jenkins for Indexing](#using-jenkins-for-indexing)
 - [Installing Packages from Artifactory Repositories](#installing-packages-from-artifactory-repositories)
 - [Package Uploading](#package-uploading)
+- [Acknowledgements](#acknowledgements)
 
 
 ## Overview
@@ -146,4 +147,11 @@ and the `post_upload_command` configuration option comes into play here.
 
 Support for [dput-ng](http://people.debian.org/~paultag/dput-ng/) might be a good idea, when that one gets more traction
 (didn't even know about it before I searched for existing `dput` plugins).
+
+
+## Acknowledgements
+
+* The authors of `apt-ftparchive`, `davfs2`, `curl`, and `bash`.
+* [Inkscape](http://inkscape.org/) and [Shutter](https://en.wikipedia.org/wiki/Shutter_%28software%29) for eye candy.
+* [DocToc](http://doctoc.herokuapp.com/) and Thorsten Lorenz for easy TOC maintenance.
 
