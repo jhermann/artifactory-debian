@@ -15,7 +15,7 @@ and deploy DEB packages to it.
 
 ## Overview
 
-As long as [RTFACT-4613: ](https://www.jfrog.com/jira/browse/RTFACT-4613) remains unresolved, 
+As long as [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613) remains unresolved, 
 this is a way to manage your Debian packages within Artifactory here and now.
 
 `deb-index.sh` is a little shell script that indexes a set of Debian repos located in Artifactory.
