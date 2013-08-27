@@ -61,7 +61,9 @@ run the index task via either a crontab entry, or as a job on a continuous integ
 The index host needs some software and configuration added, 
 for that simply call the script with the `setup` argument like this:
 
-    sudo deb-index.sh setup http://repo.example.com/artifactory/
+```sh
+sudo deb-index.sh setup http://repo.example.com/artifactory/
+```
 
 This installs the necessary tool packages, and adds a DAVFS mount to `/etc/fstab` and credentials to
 `/etc/davfs2/secrets`. Your configured editor is called automatically to allow you 
@@ -74,7 +76,9 @@ to subdirectories (`work` and `tmp`).
 
 After finishing your configuration, you can create the Debian index files and upload them to Artifactory, by calling
 
-    deb-index.sh refresh http://repo.example.com/artifactory/
+```sh
+deb-index.sh refresh http://repo.example.com/artifactory/
+```
 
 in any normal user account (e.g. that of your continuous integration server, see the next section for a practical Jenkins example). 
 
@@ -90,13 +94,15 @@ Using a Jenkins job is a nice environment for running your indexing task.
 You can commit your repository configuration as described in the previous section to your local VCS,
 let the Jenkins job check that out, and then run a *Shell Build Step* like follows:
 
-    export ARTIFACTORY_URL=http://repo.example.com/artifactory/
+```sh
+export ARTIFACTORY_URL="http://repo.example.com/artifactory/"
 
-    test -d artifactory-debian \
-        && ( cd artifactory-debian && git pull ) \
-        || git clone https://github.com/jhermann/artifactory-debian.git
+test -d artifactory-debian \
+    && ( cd artifactory-debian && git pull ) \
+    || git clone "https://github.com/jhermann/artifactory-debian.git"
 
-    artifactory-debian/indexing/deb-index.sh refresh
+artifactory-debian/indexing/deb-index.sh refresh
+```
 
 The upload credentials are preferably injected into the job's environment using the `EnvInject` plugin,
 so that they never appear in any console logs or other reports. 
@@ -110,9 +116,11 @@ Jenkins also allows you to trigger the index generation via a simple `curl` call
 
 The resulting repositories can be added to a machine like this:
 
-    echo "deb http://repo.example.com/artifactory/debian-local noplat/" \
-        >/etc/apt/sources.list.d/artifactory-noplat.list
-    apt-get update
+```sh
+echo "deb http://repo.example.com/artifactory/debian-local noplat/" \
+    >/etc/apt/sources.list.d/artifactory-noplat.list
+apt-get update
+```
 
 Then to give it a spin, try to list some packages only found in your new repository, using `apt-cache search`.
 Or simply install a package via `apt-get`.
