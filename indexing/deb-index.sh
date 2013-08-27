@@ -15,7 +15,7 @@ repo_url="${2:-$ARTIFACTORY_URL}" # e.g. http://repo.example.com/artifactory/
 repo_url="${repo_url%/}/$repo_name/"
 repo_mount="/mnt/artifactory-$repo_name"
 davfs_options="auto,noexec,ro,uid=davfs2,gid=users,file_mode=440,dir_mode=550"
-confdir=$(cd $(dirname "$0") && pwd)
+confdir="$(pwd)" # $(cd $(dirname "$0") && pwd)
 
 
 fail() { # fail with error message and exit code 1
