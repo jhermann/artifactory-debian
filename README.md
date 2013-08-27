@@ -3,6 +3,14 @@
 `artifactory-debian` offers tools to use Artifactory as a Debian (APT) repository, 
 and deploy DEB packages to it.
 
+**Table of Contents**
+- [Motivation](#motivation)
+- [Repository Setup](#repository-setup)
+	- [Artifactory Configuration](#artifactory-configuration)
+	- [Indexing Host Configuration](#indexing-host-configuration)
+- [Installing Packages from Artifactory Repositories](#installing-packages-from-artifactory-repositories)
+- [Package Uploading](#package-uploading)
+
 
 ## Motivation
 
