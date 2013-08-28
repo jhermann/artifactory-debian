@@ -1,5 +1,6 @@
 #! /bin/bash
 set -e
+dput=$(which dput-dav >/dev/null && echo "dput-dav" || echo "dput")
 
 fail() { # fail with error message and exit code 1
     echo >&2 "ERROR:" "$@"
@@ -7,7 +8,7 @@ fail() { # fail with error message and exit code 1
 }
 
 dput_test() {
-    dput --config dput.cf --debug --force --unchecked "$@"
+    $dput --config dput.cf --debug --force --unchecked "$@"
 }
 
 
@@ -31,7 +32,7 @@ echo "*** Printing effective test config **"
 dput_test --print
 
 echo
-echo "*** dput integration test - simulating an upload **"
+echo "*** $dput integration test - simulating an upload **"
 test -r "/usr/share/dput/webdav.py" || fail "You need to install webdav.py to /usr/share/dput"
 dput_test 'artifactory-debian:integration-test;repo=foo+bar' build/*.changes | tee build/dput.log
 set +x
@@ -39,9 +40,9 @@ grep ".repo.: .foo bar." build/dput.log >/dev/null || fail "Host argument passin
 
 echo
 if grep ".extended_info.: .1.," build/dput.log >/dev/null; then
-    echo "INFO: You're running a successfully patched dput with extended plugin info available."
+    echo "INFO: You're running a successfully patched $dput with extended plugin info available."
 else
-    echo "WARN: You're running an unpatched dput without extended plugin info," \
+    echo "WARN: You're running an unpatched $dput without extended plugin info," \
         "some 'webdav' features might be missing."
 fi
 

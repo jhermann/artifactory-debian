@@ -173,12 +173,18 @@ you also need to apply a
 either globally or by creating a copy in your user account.
 
 ```sh
-# option 1) apply the patch globally (needs root)
+# option 1) create a dput-dav derivative globally (needs root)
+cd /usr/local/bin
+cp -p /usr/bin/dput dput-dav
+curl -skS https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch \
+    | patch dput-dav
+
+# option 2) apply the patch globally (needs root)
 sudo bash -c "\
     curl -skS https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch \
     | patch -bVt /usr/bin/dput"
 
-# option 2) making a local copy in your user account (for mere mortals)
+# option 3) making a local copy in your user account (for mere mortals)
 cd ~/bin
 cp -p /usr/bin/dput .
 curl -skS https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch \
