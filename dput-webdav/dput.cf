@@ -1,0 +1,13 @@
+#
+# Sample ~/.dput.cf for Artifactory
+#
+
+[artifactory-debian]
+fqdn = repo.example.com:80
+login = uploader
+incoming = /artifactory/debian-local/incoming/
+method = webdav
+allow_unsigned_uploads = 1
+#run_lintian = 1
+#check_version = 1
+
