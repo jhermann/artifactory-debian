@@ -1,0 +1,8 @@
+--- /usr/bin/dput	2011-05-06 14:51:40.000000000 +0200
++++ /home/jhe/bin/dput	2013-08-28 18:47:38.072106774 +0200
+@@ -904,4 +904,5 @@
+                     files_to_upload, debug, scp_compress, ssh_config_options)
+             else:
++                upload_methods[method].extended_info = dict(config=config, host=host)
+                 upload_methods[method](fqdn, login, incoming, \
+                     files_to_upload, debug, 0, progress=progress)

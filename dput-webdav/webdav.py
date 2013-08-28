@@ -59,7 +59,12 @@ def upload(fqdn, login, incoming, files_to_upload, debug, dummy, progress=0):
     assert sys.version_info >= (2, 5), "Your snake is a rotting corpse"
 
     # Try to get host argument from command line
-    host_argument = get_host_argument(fqdn)
+    if upload.extended_info:
+        host_config = dict(upload.extended_info["config"].items(upload.extended_info["host"]))
+        host_argument = host_config.get(upload.extended_info["host"], "")
+    else:
+        host_config = {}
+        host_argument = get_host_argument(fqdn)
     cli_params = dict(cgi.parse_qsl(host_argument, keep_blank_values=True))
 
     # Special handling for integration test code
@@ -68,12 +73,16 @@ def upload(fqdn, login, incoming, files_to_upload, debug, dummy, progress=0):
         print "upload arguments = ",
         pprint.pprint(dict((k, v) for k, v in locals().iteritems() if k in (
             "fqdn", "login", "incoming", "files_to_upload", "debug", "dummy", "progress")))
+        print "host config = ",
+        pprint.pprint(host_config)
         print "host arguments = ",
         pprint.pprint(cli_params)
         return
 
     # TODO: everything
     return
+
+upload.extended_info = {}
 
 
 if __name__ == "__main__":

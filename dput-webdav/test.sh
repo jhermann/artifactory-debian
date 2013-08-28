@@ -34,8 +34,16 @@ echo
 echo "*** dput integration test - simulating an upload **"
 test -r "/usr/share/dput/webdav.py" || fail "You need to install webdav.py to /usr/share/dput"
 dput_test 'artifactory-debian:integration-test;repo=foo+bar' build/*.changes | tee build/dput.log
-grep ".repo.: .foo bar." build/dput.log >/dev/null || fail "Host argument passing doesn't work"
 set +x
+grep ".repo.: .foo bar." build/dput.log >/dev/null || fail "Host argument passing doesn't work"
+
+echo
+if grep ".extended_info.: .1.," build/dput.log >/dev/null; then
+    echo "INFO: You're running a successfully patched dput with extended plugin info available."
+else
+    echo "WARN: You're running an unpatched dput without extended plugin info," \
+        "some 'webdav' features might be missing."
+fi
 
 echo
 echo "** ALL OK **"
