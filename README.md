@@ -12,10 +12,10 @@ and deploy DEB packages to it.
 	- [Using Jenkins for Indexing](#using-jenkins-for-indexing)
 - [Installing Packages from Artifactory Repositories](#installing-packages-from-artifactory-repositories)
 - [Package Uploading](#package-uploading)
-	- ['webdav' Upload Method for 'dput'](#'webdav'-upload-method-for-'dput')
-	- [Installing the 'webdav' Plugin](#installing-the-'webdav'-plugin)
-	- [Basic 'webdav' Configuration](#basic-'webdav'-configuration)
-	- [Extended 'webdav' Configuration](#extended-'webdav'-configuration)
+	- ['webdav' Upload Method for 'dput'](#webdav-upload-method-for-dput)
+	- [Installing the 'webdav' Plugin](#installing-the-webdav-plugin)
+	- [Basic 'webdav' Configuration](#basic-webdav-configuration)
+	- [Extended 'webdav' Configuration](#extended-webdav-configuration)
 - [Acknowledgements](#acknowledgements)
 
 
