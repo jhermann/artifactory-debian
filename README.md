@@ -168,7 +168,7 @@ of your git checkout.
 If all went smoothly, you'll see `** ALL OK **` as the last line of output.
 
 In case you want to use the features as described below in 
-[Extended 'webdav' Configuration](#extended-'webdav'-configuration),
+[Extended 'webdav' Configuration](#extended-webdav-configuration),
 you also need to apply a
 [dput patch](https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch),
 either globally or by creating a copy in your user account.
@@ -227,7 +227,7 @@ allow_unsigned_uploads = 1
 ### Extended 'webdav' Configuration
 
 Some custom `webdav` options need the `dput` patch applied, 
-refer to [Installing the 'webdav' Plugin](#installing-the-'webdav'-plugin) for that.
+refer to [Installing the 'webdav' Plugin](#installing-the-webdav-plugin) for that.
 
 The extended options are these:
 
