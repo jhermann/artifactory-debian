@@ -1,4 +1,3 @@
-
 # Artifactory Debian Repository Support
 
 `artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository, 
@@ -245,7 +244,7 @@ repo_mappings = precise=1204_Precise unstable=snapshots *-experimental=snapshots
 
 ## Acknowledgements
 
-* The authors of `apt-ftparchive`, `davfs2`, `curl`, and `bash`.
+* The authors of `dput`, `apt-ftparchive`, `davfs2`, `curl`, and `bash`.
 * [Inkscape](http://inkscape.org/) and [Shutter](https://en.wikipedia.org/wiki/Shutter_%28software%29) for eye candy.
 * [DocToc](http://doctoc.herokuapp.com/) and Thorsten Lorenz for easy TOC maintenance.
 
