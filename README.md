@@ -154,7 +154,21 @@ Support for [dput-ng](http://people.debian.org/~paultag/dput-ng/) might be a goo
 
 ### Installing the 'webdav' Plugin
 
-Copy the plugin to `/usr/share/dput`, from your local git directory, or directly from GitHub using this command:
+**Install the `dput-dav` Package**
+
+Call `./package.sh` in the `dput-webdav` directory, 
+and a Debian package is created in the `build` directory,
+containing the plugin and a patched copy of the build host's `dput` command
+(thus the whole thing is released under GPLv2).
+
+Then just `dpkg -i` that on your build host, and once you have everything configured,
+upload the package using your new `dput-dav` command.
+
+**Manual Installation**
+
+If for some reason you can't use a packaged installation,
+copy the plugin to `/usr/share/dput`, from your local git directory,
+or directly from GitHub using this command:
 
 ```sh
 sudo bash -c "umask 0133; curl -skS -o /usr/share/dput/webdav.py \
