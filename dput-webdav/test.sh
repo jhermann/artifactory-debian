@@ -11,6 +11,10 @@ dput_test() {
     $dput --config dput.cf --debug --force --unchecked "$@"
 }
 
+mkdir -p build
+export PRJDIR=$(cd $(dirname "$0") && pwd)
+export ARTIFACTORY_CREDENTIALS="uploader:password"
+echo "$ARTIFACTORY_CREDENTIALS" >build/artifactory-credentials
 
 echo
 echo "*** Python unit tests **"
@@ -37,6 +41,8 @@ test -r "/usr/share/dput/webdav.py" || fail "You need to install webdav.py to /u
 dput_test 'artifactory-debian:integration-test;repo=foo+bar' build/*.changes | tee build/dput.log
 set +x
 grep ".repo.: .foo bar." build/dput.log >/dev/null || fail "Host argument passing doesn't work"
+grep "^D: webdav: Resolved login credentials to uploader:\\*" build/dput.log >/dev/null \
+    || fail "Login env / file reference not resolved"
 
 echo
 if grep ".extended_info.: .1.," build/dput.log >/dev/null; then

@@ -4,7 +4,7 @@
 
 [artifactory-debian]
 fqdn = repo.example.com:80
-login = uploader
+login = file:$PRJDIR/build/artifactory-credentials
 incoming = /artifactory/debian-local/incoming/
 method = webdav
 allow_unsigned_uploads = 1

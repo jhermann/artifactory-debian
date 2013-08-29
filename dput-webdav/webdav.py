@@ -3,7 +3,9 @@
 
     Install to "/usr/share/dput/webdav.py".
 """
+from __future__ import with_statement
 import os, sys, httplib, urllib2, urlparse, getpass, cgi
+from contextlib import closing
 
 try:
     import dputhelper
@@ -12,15 +14,36 @@ except ImportError:
     import dputhelper
 
 
+def trace(msg, **kwargs):
+    """Emit log traces in debug mode."""
+    if trace.debug:
+        print("D: webdav: " + (msg % kwargs))
+trace.debug = False
+
+
+def _resolve_credentials(login):
+    """Look up special forms of credential references."""
+    result = login
+    if "$" in result:
+        result = os.path.expandvars(result)
+    if result.startswith("file:"):
+        result = os.path.abspath(os.path.expanduser(result.split(':', 1)[1]))
+        with closing(open(result, "r")) as handle:
+            result = handle.read().strip()
+    trace("Resolved login credentials to %(user)s:%(pwd)s", 
+        user=result.split(':', 1)[0], pwd='*' * len(result.split(':', 1)[1]), )
+    return result
+
+
 class PromptingPasswordMgr(urllib2.HTTPPasswordMgr):
     """ Custom password manager that prompts for a password once, if none is available otherwise.
         
         Based on code in dput 0.9.6 (http method).
     """
 
-    def __init__(self, username):
+    def __init__(self, login):
         super(PromptingPasswordMgr, self).__init__()
-        self.username = username
+        self.login = login
 
     def find_user_password(self, realm, authuri):
         """Prompt for a password once and remember it, unless already provided in the configuration."""
@@ -28,12 +51,13 @@ class PromptingPasswordMgr(urllib2.HTTPPasswordMgr):
         authinfo = super(PromptingPasswordMgr, self).find_user_password(realm, authuri)
 
         if authinfo == (None, None):
-            if ':' in self.username:
-                authinfo = self.username.split(':', 1)
+            credentials = self.login
+            if ':' in credentials:
+                authinfo = credentials.split(':', 1)
             else:
                 password = getpass.getpass("    Password for %s:" % realm)
-                self.add_password(realm, authuri, self.username, password)
-                authinfo = self.username, password
+                self.add_password(realm, authuri, credentials, password)
+                authinfo = credentials, password
 
         return authinfo
 
@@ -57,6 +81,8 @@ def get_host_argument(fqdn):
 def upload(fqdn, login, incoming, files_to_upload, debug, dummy, progress=0):
     """Upload the files via WebDAV."""
     assert sys.version_info >= (2, 5), "Your snake is a rotting corpse"
+    trace.debug = bool(debug)
+    login = _resolve_credentials(login)
 
     # Try to get host argument from command line
     if upload.extended_info:

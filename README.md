@@ -215,6 +215,7 @@ Refer to `man dput.cf` for the common configuration options shared by all upload
 Here, only noteworthy differences are mentioned.
 
 * To avoid any password prompts, `login` can take the form `account:password` (make sure you properly secure your `~/.dput.cf` in case you store passwords in it).
+* If `login` contains `${envvar}` references, they are expanded; if the value starts with `file:`, the credentials are loaded from the given path.
 * `incoming` can be a full URL, and you can insert package metadata into the path, to support uploads into hierarchical repository structures (like `«repo»/«package»/«version»/«package»_«version»_«arch».deb`).
 
 For the variable replacements in `incoming`, the following keys are supported:
