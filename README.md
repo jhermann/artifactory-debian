@@ -228,6 +228,11 @@ For the variable replacements in `incoming`, the following keys are supported:
 On modern systems with Python 2.6 or 2.7 installed, you can use the `{variable}` syntax for replacements;
 otherwise you have to fall back on `%(variable)s` instead.
 
+You can also set some repository parameters in the URL's anchor, formatted like a query string (`key=val&...`):
+
+* `mindepth` — The number of path components that must already exist (default: 0). You can use this to prevent accidental creation of new repositories, or packages.
+* `overwrite` — Allows you to disable the check for an already existing `.changes` file at the target URL (set to 0 or 1; default: 0).
+
 As mentioned earlier, if you have the indexing job in Jenkins,
 a successful upload can trigger an automatic index run via its REST API,
 and the `post_upload_command` configuration option comes into play here.
@@ -239,7 +244,7 @@ Here's a sample Artifactory host section:
 method = webdav
 fqdn = repo.example.com:80
 login = uploader:password
-incoming = http://{fqdn}/artifactory/debian-local/{repo}/{source}/{upstream}/
+incoming = http://{fqdn}/artifactory/debian-local/{repo}/{source}/{upstream}/#mindepth=3&overwrite=0
 allow_unsigned_uploads = 1
 # post_upload_command = curl ... http://jenkins/...
 ```
@@ -259,7 +264,7 @@ Here's an extended configuration example:
 [artifactory-debian]
 method = webdav
 …
-repo_mappings = precise=1204_Precise unstable=snapshots *-experimental=snapshots *=incoming 
+repo_mappings = precise=1204_Precise unstable=snapshots *-experimental=snapshots *=incoming
 ```
 
 

@@ -93,15 +93,25 @@ def get_host_argument(fqdn):
     return result
 
 
+def _distro2repo(distro):
+    """Map distribution names ot repo names according to config settings."""
+    # TODO: Implement _distro2repo()
+    return distro
+
+
 def _resolve_incoming(incoming, fqdn, changes=''):
     """Resolve the given `incoming` value to a working URL."""
     # Build fully qualified URL
-    scheme, netloc, path, params, query, _ = urlparse.urlparse(incoming, scheme="http", allow_fragments=False)
+    scheme, netloc, path, params, query, anchor = urlparse.urlparse(incoming, scheme="http", allow_fragments=True)
     if scheme not in ("http", "https"):
         raise dputhelper.DputUploadFatalException("Unsupported URL scheme '%s'" % scheme)
     url = urlparse.urlunparse((scheme, netloc or fqdn, path.rstrip('/') + '/', params, query, None))
 
+    # Parse anchor to parameters
+    url_params = dict(cgi.parse_qsl(anchor or '', keep_blank_values=True))
+
     # Read changes from stream or file
+    pkgdata = {}
     if changes:
         try:
             changes.read # pylint: disable=maybe-no-member
@@ -111,18 +121,21 @@ def _resolve_incoming(incoming, fqdn, changes=''):
         else:
             changes = changes.read() # pylint: disable=maybe-no-member
 
-    # interpolate `url`
-    namespace = dict(fqdn=fqdn)
-    # TODO: extend namespace with changes
+        # TODO: pkgdata = ...
+
+    # Interpolate `url`
+    pkgdata.update(dict(
+        fqdn=fqdn, repo=_distro2repo(pkgdata.get("distribution", "unknown")),
+    ))
     try:
         url.format
     except AttributeError:
-        url = url % namespace # Python 2.5
+        url = url % pkgdata # Python 2.5
     else:
-        url = url.format(**namespace) # Python 2.6+
+        url = url.format(**pkgdata) # Python 2.6+
 
-    trace("Resolved incoming to `%(url)s'", url=url)
-    return url
+    trace("Resolved incoming to `%(url)s' params=%(params)r", url=url, params=url_params)
+    return url, url_params
 
 
 def _dav_put(filepath, url, login, progress=None):
@@ -195,7 +208,10 @@ def upload(fqdn, login, incoming, files_to_upload, debug, dummy, progress=None):
         cli_params = dict(cgi.parse_qsl(host_argument, keep_blank_values=True))
 
         # Prepare for uploading
-        incoming = _resolve_incoming(incoming, fqdn)
+        incoming, repo_params = _resolve_incoming(incoming, fqdn)
+        repo_params.update(cli_params)
+        mindepth = int(repo_params.get("mindepth", "0"), 10)
+        overwrite = int(repo_params.get("overwrite", "0"), 10)
         # TODO: auth_handler = PromptingPasswordMgr(login)
 
         # Special handling for integration test code
@@ -210,6 +226,9 @@ def upload(fqdn, login, incoming, files_to_upload, debug, dummy, progress=None):
             pprint.pprint(cli_params)
         else:
             # TODO: Check if .changes file already exists
+            #if not overwrite:
+            # TODO: And also check for minmal path depth
+            #if mindepth:
 
             # Upload the files in the given order
             for filepath in files_to_upload:
@@ -226,21 +245,25 @@ upload.extended_info = {}
 #
 
 class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
-    """LOcal unittests."""
+    """Local unittests."""
 
     def test_resolve_incoming(self):
         """Test URL resolving."""
-        result = _resolve_incoming("incoming", "repo.example.com:80")
+        result, params = _resolve_incoming("incoming", "repo.example.com:80")
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
+        self.assertEquals(params, {})
 
-        result = _resolve_incoming("https:///incoming/", "repo.example.com:80")
+        result, _ = _resolve_incoming("https:///incoming/", "repo.example.com:80")
         self.assertEquals(result, "https://repo.example.com:80/incoming/")
 
-        result = _resolve_incoming("//explicit/incoming/", "repo.example.com:80")
+        result, _ = _resolve_incoming("//explicit/incoming/", "repo.example.com:80")
         self.assertEquals(result, "http://explicit/incoming/")
 
-        result = _resolve_incoming("//{fqdn}/incoming/", "repo.example.com:80")
+        result, _ = _resolve_incoming("//{fqdn}/incoming/", "repo.example.com:80")
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
+
+        _, params = _resolve_incoming("incoming#a=1&b=c", "")
+        self.assertEquals(params, dict(a="1", b="c"))
 
         self.assertRaises(dputhelper.DputUploadFatalException, _resolve_incoming, "file:///incoming/", "")
 
