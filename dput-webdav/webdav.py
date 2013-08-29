@@ -99,7 +99,7 @@ def _distro2repo(distro):
     return distro
 
 
-def _resolve_incoming(incoming, fqdn, changes=''):
+def _resolve_incoming(incoming, fqdn, changes='', cli_params=None):
     """Resolve the given `incoming` value to a working URL."""
     # Build fully qualified URL
     scheme, netloc, path, params, query, anchor = urlparse.urlparse(incoming, scheme="http", allow_fragments=True)
@@ -127,6 +127,7 @@ def _resolve_incoming(incoming, fqdn, changes=''):
     pkgdata.update(dict(
         fqdn=fqdn, repo=_distro2repo(pkgdata.get("distribution", "unknown")),
     ))
+    pkgdata.update(cli_params or {})
     try:
         url.format
     except AttributeError:
@@ -208,7 +209,7 @@ def upload(fqdn, login, incoming, files_to_upload, debug, dummy, progress=None):
         cli_params = dict(cgi.parse_qsl(host_argument, keep_blank_values=True))
 
         # Prepare for uploading
-        incoming, repo_params = _resolve_incoming(incoming, fqdn)
+        incoming, repo_params = _resolve_incoming(incoming, fqdn, cli_params=cli_params)
         repo_params.update(cli_params)
         mindepth = int(repo_params.get("mindepth", "0"), 10)
         overwrite = int(repo_params.get("overwrite", "0"), 10)
