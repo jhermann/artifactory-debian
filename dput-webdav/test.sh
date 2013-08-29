@@ -16,6 +16,9 @@ export PRJDIR=$(cd $(dirname "$0") && pwd)
 export ARTIFACTORY_CREDENTIALS="uploader:password"
 echo "$ARTIFACTORY_CREDENTIALS" >build/artifactory-credentials
 
+# Link dputhelper, so pylint finds it
+ln -nfs /usr/share/dput/helper/dputhelper.py .
+
 echo
 echo "*** Python unit tests **"
 python -m webdav
@@ -38,11 +41,22 @@ dput_test --print
 echo
 echo "*** $dput integration test - simulating an upload **"
 test -r "/usr/share/dput/webdav.py" || fail "You need to install webdav.py to /usr/share/dput"
-dput_test 'artifactory-debian:integration-test;repo=foo+bar' build/*.changes | tee build/dput.log
+( dput_test 'artifactory-debian:integration-test;repo=foo+bar' build/*.changes 2>&1 || echo "FAILURE: RC=$?" ) \
+    | tee build/dput.log
 set +x
+egrep "^(FAILURE|FATAL|ERROR): " build/dput.log && fail "dput exited with an error" || :
 grep ".repo.: .foo bar." build/dput.log >/dev/null || fail "Host argument passing doesn't work"
 grep "^D: webdav: Resolved login credentials to uploader:\\*" build/dput.log >/dev/null \
     || fail "Login env / file reference not resolved"
+
+echo
+if which pylint >/dev/null; then
+    echo "Running pylint..."
+    pylint -d locally-disabled -rn webdav.py && RC=0 || RC=$?
+    test $(($RC & 35)) -eq 0 || fail "pylint errors!"
+else
+    echo "WARN: You don't have pylint installed!"
+fi
 
 echo
 if grep ".extended_info.: .1.," build/dput.log >/dev/null; then
