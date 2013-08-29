@@ -1,4 +1,4 @@
-# Artifactory Debian Repository Support
+# Artifactory Debian Repository Support  ![Logo](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/artifactory-debian-logo.png)
 
 `artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository, 
 and deploy DEB packages to it.
