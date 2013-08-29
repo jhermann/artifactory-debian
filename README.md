@@ -131,7 +131,7 @@ Or simply install a package via `apt-get`.
 
 
 ## Package Uploading
-**NOT YET IMPLEMENTED**
+**Not yet FULLY implemented**
 
 ### 'webdav' Upload Method for 'dput'
 
@@ -269,5 +269,5 @@ Thanks to…
 * the authors of `dput`, `apt-ftparchive`, `davfs2`, `curl`, and `bash`.
 * [Inkscape](http://inkscape.org/) and [Shutter](https://en.wikipedia.org/wiki/Shutter_%28software%29) for eye candy.
 * [DocToc](http://doctoc.herokuapp.com/) and Thorsten Lorenz for easy TOC maintenance.
-* [1&1](https://github.com/1and1) for ☕ ☕ ☕ and ⌛.
+* [1&1](https://github.com/1and1) for free ☕ ☕ ☕ and ⌛.
 
