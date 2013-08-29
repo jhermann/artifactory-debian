@@ -3,6 +3,10 @@
 `artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository, 
 and deploy DEB packages to it.
 
+| **dput-webdav** |
+|:-------------:|
+| [![Jenkins Status](http://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) |
+
 **Table of Contents**
 - [Overview](#overview)
 - [Repository Setup](#repository-setup)
