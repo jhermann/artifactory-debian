@@ -32,7 +32,7 @@ EOF
 
 sed -i -e 's~^Homepage: .*$~Homepage: https://github.com/jhermann/artifactory-debian~' debian/control
 sed -i -e 's/^Description: .*$/Description: dput derivative with extended WebDAV support/' debian/control
-sed -i -e 's/^.*long desc.*$//' debian/control
+sed -i -e "s/^.*long desc.*\$/ Built for $(dput --version)./" debian/control
 sed -i -e 's/^Depends: /Depends: dput, /' debian/control
 
 dpkg-buildpackage -uc -us
