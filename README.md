@@ -154,60 +154,27 @@ Support for [dput-ng](http://people.debian.org/~paultag/dput-ng/) might be a goo
 
 ### Installing the 'webdav' Plugin
 
-**Install the `dput-dav` Package**
+**Package Installation**
 
-Call `./package.sh` in the `dput-webdav` directory, 
-and a Debian package is created in the `build` directory,
-containing the plugin and a patched copy of the build host's `dput` command
-(thus the whole thing is released under GPLv2).
-
-Then just `dpkg -i` that on your build host, and once you have everything configured,
-upload the package using your new `dput-dav` command.
+Download the latest 
+[GitHub master build](http://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-dav_0%7Emaster_all.deb)
+and install it with either `dpkg -i` or directly from your browser, using the *Ubuntu Software Center* or a similar tool.
 
 **Manual Installation**
 
 If for some reason you can't use a packaged installation,
-copy the plugin to `/usr/share/dput`, from your local git directory,
-or directly from GitHub using this command:
+copy the plugin from GitHub using this command:
 
 ```sh
 sudo bash -c "umask 0133; curl -skS -o /usr/share/dput/webdav.py \
     https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/webdav.py"
 ```
 
-To check for a successful installation, run `./test.sh` in the
-[dput-webdav](https://github.com/jhermann/artifactory-debian/tree/master/dput-webdav) directory
-of your git checkout. 
-If all went smoothly, you'll see `** ALL OK **` as the last line of output.
+**Other Installation Options**
 
-In case you want to use the features as described below in 
-[Extended 'webdav' Configuration](#extended-webdav-configuration),
-you also need to apply a
-[dput patch](https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch),
-either globally or by creating a copy in your user account.
-
-```sh
-# option 1) create a dput-dav derivative globally (needs root)
-cd /usr/local/bin
-cp -p /usr/bin/dput dput-dav
-curl -skS https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch \
-    | patch dput-dav
-
-# option 2) apply the patch globally (needs root)
-sudo bash -c "\
-    curl -skS https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch \
-    | patch -bVt /usr/bin/dput"
-
-# option 3) making a local copy in your user account (for mere mortals)
-cd ~/bin
-cp -p /usr/bin/dput .
-curl -skS https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/dput.patch \
-    | patch dput
-```
-
-The above `./test.sh` procedure must then print the following, right above the  `** ALL OK **`:
-
-    INFO: You're running a successfully patched dput with extended plugin info available.
+For an in-depth discussion of options, see the 
+[Detailed Install Instructions](https://github.com/jhermann/artifactory-debian/wiki/Detailed-Install-Instructions)
+wiki page.
 
 
 ### Basic 'webdav' Configuration
