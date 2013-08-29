@@ -265,7 +265,9 @@ repo_mappings = precise=1204_Precise unstable=snapshots *-experimental=snapshots
 
 ## Acknowledgements
 
-* The authors of `dput`, `apt-ftparchive`, `davfs2`, `curl`, and `bash`.
+Thanks to…
+* the authors of `dput`, `apt-ftparchive`, `davfs2`, `curl`, and `bash`.
 * [Inkscape](http://inkscape.org/) and [Shutter](https://en.wikipedia.org/wiki/Shutter_%28software%29) for eye candy.
 * [DocToc](http://doctoc.herokuapp.com/) and Thorsten Lorenz for easy TOC maintenance.
+* [1&1](https://github.com/1and1) for ☕ ☕ ☕ and ⌛.
 
