@@ -12,7 +12,6 @@ and deploy DEB packages to it.
 - [Repository Setup](#repository-setup)
 	- [Artifactory Configuration](#artifactory-configuration)
 	- [Indexing Host Configuration](#indexing-host-configuration)
-	- [Using Jenkins for Indexing](#using-jenkins-for-indexing)
 - [Installing Packages from Artifactory Repositories](#installing-packages-from-artifactory-repositories)
 - [Package Uploading](#package-uploading)
 	- ['webdav' Upload Method for 'dput'](#webdav-upload-method-for-dput)
@@ -42,6 +41,7 @@ In the Artifactory web interface, the final result after following the setup ins
 
 Detailed information about the initial repository setup can be found at 
 [Configuration of Artifactory and Repository Indexing](https://github.com/jhermann/artifactory-debian/wiki/Configuration-of-Artifactory-and-Repository-Indexing).
+What follows is a shorter, no-nonsense version.
 
 
 ### Artifactory Configuration
