@@ -26,81 +26,76 @@ and deploy DEB packages to it.
 
 As long as [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613) remains unresolved, 
 this is a way to manage your Debian packages within Artifactory here and now.
+It offers a shell script that indexes a set of Debian repos located in Artifactory,
+and a `dput` plugin that allows you to continue to use the standard Debian tool chain.
 
-`deb-index.sh` is a little shell script that indexes a set of Debian repos located in Artifactory.
-
-For package uploading, a `dput` plugin allows you to continue to use the standard Debian tool chain,
-just with an additional `dput.cf` section describing your Artifactory installation.
-
-
-## Repository Setup
-
-### Artifactory Configuration
-
-To create your Debian repositories in Artifactory, start by adding a *Repository Layout* named
-`debian-default` with this *Artifact Path Pattern*:
-
-    [orgPath]/[module]/[baseRev]/[module]-[baseRev](-[patchLevel<[.~0-9a-zA-Z]+>])(_[archTag<\w+>]).[ext]
-
-Set the *Folder/File Integration Revision RegExp* fields to `.*`.
-
-Then create a new Artifactory repository named `debian-local` using the new layout.
-Note that within that *Artifactory* repository, you can have several *Debian* repositories in form of subfolders.
-Packages in those *Debian* repositories go into `pkgname/pkgversion` subfolders 
-(cf. `[orgPath]/[module]/[baseRev]` in the layout's path pattern).
-
-In the Artifactory web interface, the final result will look like this…
-
-![Sample screenshot of a working repository](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/artifactory-repo-browser.png)
-
-
-### Indexing Host Configuration
-
-For the Debian repositories to work together with `apt-get`, some index data needs
-to be generated; this is what the script `deb-index.sh` does. The script and a
-configuration example can be found in the 
-[indexing](https://github.com/jhermann/artifactory-debian/tree/master/indexing) directory.
 The following diagram shows a typical setup and how the components interact.
 
 ![Configuration & Data Flow](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/data-flow.png)
 
-You can use any host that has access to your Artifactory server for indexing, and 
+In the Artifactory web interface, the final result after following the setup instructions below will look like this…
+
+![Sample screenshot of a working repository](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/artifactory-repo-browser.png)
+
+
+## Repository Setup
+
+Detailed information about the initial repository setup can be found at 
+[Configuration of Artifactory and Repository Indexing](https://github.com/jhermann/artifactory-debian/wiki/Configuration-of-Artifactory-and-Repository-Indexing).
+
+
+### Artifactory Configuration
+
+To create your Debian repositories in Artifactory, follow these steps:
+
+* Login with an administrator account.
+* Add a *Repository Layout* named `debian-default` with this *Artifact Path Pattern*:
+
+```sh
+[orgPath]/[module]/[baseRev]/[module]-[baseRev](-[patchLevel<[.~0-9a-zA-Z]+>])(_[archTag<\w+>]).[ext]
+```
+
+* Set the layout's *Folder/File Integration Revision RegExp* fields to `.*`, and save it.
+* Create a new Artifactory repository named `debian-local` using the new layout.
+
+Now you can instantly start to upload packages into `debian-local`.
+
+
+### Indexing Host Configuration
+
+In order for `apt-get` to find packages, index data needs to be generated (what `apt-get update` downloads).
+This is what the script `deb-index.sh` does; the script and a configuration example can be found in the 
+[indexing](https://github.com/jhermann/artifactory-debian/tree/master/indexing) directory.
+
+You can use any host that has network access to your Artifactory server for indexing, and 
 run the index task via either a crontab entry, or as a job on a continuous integration server. 
-The index host needs some software and configuration added, 
-for that simply call the script with the `setup` argument like this:
+This describes a Jenkins setup, for using `cron` just adapt the Jenkins configuration steps accordingly.
+
+**On your workstation**
+
+* Describe your repositories in the `apt-ftparchive.conf` and `repo-«reponame».conf` configuration files;
+see the provided examples and `man apt-ftparchive` for details. Commit them to your local version control.
+
+
+**On a Jenkins slave**
+
+* Open a shell session on the indexing host, and copy or clone this git repository.
+* Call the script with the `setup` argument like this:
 
 ```sh
 sudo ./deb-index.sh setup "http://repo.example.com/artifactory/"
 ```
 
-This installs the necessary tool packages, and adds a DAVFS mount to `/etc/fstab` and credentials to
-`/etc/davfs2/secrets`. Your configured editor is called automatically to allow you 
-to fill in the Artifactory credentials for read-only access.
-
-Next, describe your repositories in the `apt-ftparchive.conf` and `repo-«reponame».conf` configuration files;
-see the provided examples and `man apt-ftparchive` for details.
-These are always expected in the current directory, and temporary files are written
-to subdirectories (`work` and `tmp`).
-
-After finishing your configuration, you can create the Debian index files and upload them to Artifactory, by calling
-
-```sh
-./deb-index.sh refresh "http://repo.example.com/artifactory/"
-```
-
-in any normal user account (e.g. that of your continuous integration server, see the next section for a practical Jenkins example). 
-
-Instead of passing the Artifactory URL on the comamnd line, you can set the `ARTIFACTORY_URL` environment variable.
-Note that you also need to provide the Artifactory deployment credentials (of the form `user:pwd`) for
-your new repository in either the `ARTIFACTORY_CREDENTIALS` environment variable, or the file `~/.artifactory.credentials`.
-This account needs upload permissions to `debian-local`.
+* When your configured editor pops up with `/etc/davfs2/secrets`, fill in Artifactory credentials for read-only access.
 
 
-### Using Jenkins for Indexing
+**In the Jenkins web interface**
 
-Using a Jenkins job is a nice environment for running your indexing task.
-You can commit your repository configuration as described in the previous section to your local VCS,
-let the Jenkins job check that out, and then run a *Shell Build Step* like follows:
+* Install the `EnvInject` Jenkins plugin, if you don't already have it.
+* Create a Jenkins job bound to the slave where you called `deb-index.sh setup`:
+  * Set the workspace checkout location to the configuration files you just committed.
+  * Add the `ARTIFACTORY_CREDENTIALS` environment variable to the *Inject passwords to the build as environment variables* setting of *Build Environment*. 
+  * Add a *Shell Build Step* like follows:
 
 ```sh
 export ARTIFACTORY_URL="http://repo.example.com/artifactory/"
@@ -112,12 +107,11 @@ test -d artifactory-debian \
 artifactory-debian/indexing/deb-index.sh refresh
 ```
 
-The upload credentials are preferably injected into the job's environment using the `EnvInject` plugin,
-so that they never appear in any console logs or other reports. 
-For that, add the `ARTIFACTORY_CREDENTIALS` environment variable
-to the *Inject passwords to the build as environment variables* setting of *Build Environment*. 
+* Start the job via *Build Now*.
 
-Jenkins also allows you to trigger the index generation via a simple `curl` call or similar, using the Jenkins REST API.
+* Check in the Jenkins log and Artifactory web interface that the index files were generated and uploaded (cf. above schreenshot).
+
+And you're now ready to use your shiny new toy…
 
 
 ## Installing Packages from Artifactory Repositories
