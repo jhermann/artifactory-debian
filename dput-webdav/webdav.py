@@ -155,6 +155,7 @@ def _dav_put(filepath, url, login, progress=None):
         scheme, netloc, path, params, query, _ = urlparse.urlparse(fileurl)
 
         try:
+            # TODO: use "requests"?!
             conn = (httplib.HTTPSConnection if scheme == "https" else httplib.HTTPConnection)(netloc)
             try:
                 conn.putrequest("PUT", urlparse.urlunparse((None, None, path, params, query, None)))#, skip_accept_encoding=True
