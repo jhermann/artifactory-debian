@@ -139,7 +139,7 @@ def _resolve_incoming(incoming, fqdn, changes='', cli_params=None):
     return url, url_params
 
 
-def _dav_put(filepath, url, login, progress=None):
+def _dav_put(filepath, url, login, progress=None): # pylint: disable=too-many-locals
     """Upload `filepath` to given `url` (referring to a WebDAV collection)."""
     basename = os.path.basename(filepath)
     fileurl = urlparse.urljoin(url.rstrip('/') + '/', basename)
@@ -192,7 +192,8 @@ def _dav_put(filepath, url, login, progress=None):
             raise urllib2.URLError(exc)
 
 
-def upload(fqdn, login, incoming, files_to_upload, debug, dummy, progress=None): # pylint: disable=too-many-arguments
+def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-arguments, too-many-locals
+        debug, dummy, progress=None):
     """Upload the files via WebDAV."""
     assert sys.version_info >= (2, 5), "Your snake is a rotting corpse"
     trace.debug = bool(debug)
