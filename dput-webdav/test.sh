@@ -49,7 +49,7 @@ dput_test --print
 
 echo
 echo "*** $dput integration test - simulating an upload **"
-test -r "/usr/share/dput/webdav.py" || fail "You need to install webdav.py to /usr/share/dput"
+##test -r "/usr/share/dput/webdav.py" || fail "You need to install webdav.py to /usr/share/dput"
 ( dput_test 'artifactory-debian:integration-test;repo=foo+bar' build/*.changes 2>&1 || echo "FAILURE: RC=$?" ) \
     | tee build/dput.log
 set +x
