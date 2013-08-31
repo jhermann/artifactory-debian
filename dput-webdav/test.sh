@@ -61,7 +61,7 @@ grep "^D: webdav: Resolved login credentials to uploader:\\*" build/dput.log >/d
 echo
 if which pylint >/dev/null; then
     echo "Running pylint..."
-    pylint -d locally-disabled -rn webdav.py && RC=0 || RC=$?
+    pylint --rcfile ./pylint.cfg -d locally-disabled -rn webdav.py && RC=0 || RC=$?
     test $(($RC & 35)) -eq 0 || fail "pylint errors!"
 else
     echo "WARN: You don't have pylint installed!"
