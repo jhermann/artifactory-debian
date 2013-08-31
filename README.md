@@ -1,7 +1,7 @@
 # ![Logo](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/artifactory-debian-logo.png) Debian Repositories in Artifactory
 
 `artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository, 
-and deploy DEB packages to it.
+and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/artifactory-debian/wiki).
 
 | **dput-webdav** |
 |:-------------:|
@@ -16,8 +16,7 @@ and deploy DEB packages to it.
 - [Package Uploading](#package-uploading)
 	- ['webdav' Upload Method for 'dput'](#webdav-upload-method-for-dput)
 	- [Installing the 'webdav' Plugin](#installing-the-webdav-plugin)
-	- [Basic 'webdav' Configuration](#basic-webdav-configuration)
-	- [Extended 'webdav' Configuration](#extended-webdav-configuration)
+	- ['webdav' Plugin Configuration](#webdav-plugin-configuration)
 - [Acknowledgements](#acknowledgements)
 
 
@@ -94,7 +93,7 @@ sudo ./deb-index.sh setup "http://repo.example.com/artifactory/"
 * Install the `EnvInject` Jenkins plugin, if you don't already have it.
 * Create a Jenkins job bound to the slave where you called `deb-index.sh setup`:
   * Set the workspace checkout location to the configuration files you just committed.
-  * Add the `ARTIFACTORY_CREDENTIALS` environment variable to the *Inject passwords to the build as environment variables* setting of *Build Environment*. 
+  * Add the `ARTIFACTORY_CREDENTIALS` environment variable with an account (`user:pwd`) having uploading permission, at the *Inject passwords to the build as environment variables* setting of *Build Environment*. 
   * Add a *Shell Build Step* like follows:
 
 ```sh
@@ -160,6 +159,7 @@ and install it with either `dpkg -i` or directly from your browser, using the *U
 **Manual Installation**
 
 If for some reason you can't use a packaged installation,
+or have a version of `dput` other than `0.9.6` installed,
 copy the plugin from GitHub using this command:
 
 ```sh
@@ -174,62 +174,36 @@ For an in-depth discussion of options, see the
 wiki page.
 
 
-### Basic 'webdav' Configuration
-Refer to `man dput.cf` for the common configuration options shared by all upload methods. 
-Here, only noteworthy differences are mentioned.
+### 'webdav' Plugin Configuration
 
-* To avoid any password prompts, `login` can take the form `account:password` (make sure you properly secure your `~/.dput.cf` in case you store passwords in it).
-* If `login` contains `${envvar}` references, they are expanded; if the value starts with `file:`, the credentials are loaded from the given path.
-* `incoming` can be a full URL, and you can insert package metadata into the path, to support uploads into hierarchical repository structures (like `«repo»/«package»/«version»/«package»_«version»_«arch».deb`).
+Your `~/.dput.cf` needs a section describing your Artifactory service,
+and the upload credentials are placed in an extra file, for easier permission management.
+So all you need is to create two files:
 
-For the variable replacements in `incoming`, the following keys are supported:
-
-* metadata from the `.changes` file, most notably `date`, `source`, `binary`, `architecture`, `version`, `distribution`, and `urgency`.
-* `fqdn` — The value of the `fqdn` configuration option.
-* `repo` — The same as `distribution`, unless mapped like described in the next section.
-* `upstream` — The upstream `version` (everything before the first dash or tilde), or for native packages the same as `version`.
-
-On modern systems with Python 2.6 or 2.7 installed, you can use the `{variable}` syntax for replacements;
-otherwise you have to fall back on `%(variable)s` instead.
-
-You can also set some repository parameters in the URL's anchor, formatted like a query string (`key=val&...`):
-
-* `mindepth` — The number of path components that must already exist (default: 0). You can use this to prevent accidental creation of new repositories, or packages.
-* `overwrite` — Allows you to disable the check for an already existing `.changes` file at the target URL (set to 0 or 1; default: 0).
-
-As mentioned earlier, if you have the indexing job in Jenkins,
-a successful upload can trigger an automatic index run via its REST API,
-and the `post_upload_command` configuration option comes into play here.
-
-Here's a sample Artifactory host section:
+* Edit `~/.dput.cf` to include the following snippet (with the appropriate `fqdn`):
 
 ```ini
+[DEFAULT]
+default_host_main = artifactory-debian
+progress_indicator = 2
+
 [artifactory-debian]
 method = webdav
 fqdn = repo.example.com:80
-login = uploader:password
+login = file:~/.artifactory.credentials
 incoming = http://{fqdn}/artifactory/debian-local/{repo}/{source}/{upstream}/#mindepth=3&overwrite=0
 allow_unsigned_uploads = 1
+#run_lintian = 1
+#check_version = 1
 # post_upload_command = curl ... http://jenkins/...
+# repo_mappings = unstable=snapshots *-experimental=snapshots *=incoming
 ```
 
-### Extended 'webdav' Configuration
+* Call ` echo -n "«username»:«password»" >~/.artifactory.credentials; chmod 600 ~/.artifactory.credentials` with your credentials filled in (put a space in front to exclude the command from shell history).
 
-Some custom `webdav` options need the `dput` patch applied, 
-refer to [Installing the 'webdav' Plugin](#installing-the-webdav-plugin) for that.
-
-The extended options are these:
-
-* `repo_mappings` — Maps distribution names to repository names, as a whitespace separated list of `distribution=repo` pairs; if no mapping is found, the name is used unchanged. Distribution names are matched ignoring case, and may be glob patterns (see the example below). Mapping rules are checked in the order they appear, and the first match is used.
-
-Here's an extended configuration example:
-
-```ini
-[artifactory-debian]
-method = webdav
-…
-repo_mappings = precise=1204_Precise unstable=snapshots *-experimental=snapshots *=incoming
-```
+To fully understand the `dput` WebDAV plugin configuration and be able to customize it,
+read [WebDAV Plugin Configuration](https://github.com/jhermann/artifactory-debian/wiki/WebDAV-Plugin-Configuration).
+Also refer to `man dput.cf` for the common configuration options shared by all upload methods.
 
 
 ## Acknowledgements
