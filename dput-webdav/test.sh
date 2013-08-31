@@ -1,6 +1,6 @@
 #! /bin/bash
 set -e
-dput=$(which dput-dav >/dev/null && echo "dput-dav" || echo "dput")
+##dput=$(which dput-dav >/dev/null && echo "dput-dav" || echo "dput")
 
 fail() { # fail with error message and exit code 1
     echo >&2 "ERROR:" "$@"
@@ -18,6 +18,15 @@ echo "$ARTIFACTORY_CREDENTIALS" >build/artifactory-credentials
 
 # Link dputhelper, so pylint finds it
 ln -nfs /usr/share/dput/helper/dputhelper.py .
+
+# Make a copy of dput that finds our plugin
+dput=$PRJDIR/build/dput
+sed -re "s:/usr/share/dput/\\*\\.py:$PRJDIR/build/plugins/*.py:" </usr/bin/dput >$dput
+patch $dput <dput.patch
+chmod a+x $dput
+mkdir -p build/plugins
+ln -nfs /usr/share/dput/*.py build/plugins
+ln -nfs "../../webdav.py" build/plugins
 
 echo
 echo "*** Python unit tests **"
@@ -58,13 +67,13 @@ else
     echo "WARN: You don't have pylint installed!"
 fi
 
-echo
-if grep ".extended_info.: .1.," build/dput.log >/dev/null; then
-    echo "INFO: You're running a successfully patched $dput with extended plugin info available."
-else
-    echo "WARN: You're running an unpatched $dput without extended plugin info," \
-        "some 'webdav' features might be missing."
-fi
+#echo
+#if grep ".extended_info.: .1.," build/dput.log >/dev/null; then
+#    echo "INFO: You're running a successfully patched $dput with extended plugin info available."
+#else
+#    echo "WARN: You're running an unpatched $dput without extended plugin info," \
+#        "some 'webdav' features might be missing."
+#fi
 
 echo
 echo "** ALL OK **"
