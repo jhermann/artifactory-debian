@@ -199,7 +199,7 @@ allow_unsigned_uploads = 1
 # repo_mappings = unstable=snapshots *-experimental=snapshots *=incoming
 ```
 
-* Call ` echo -n "«username»:«password»" >~/.artifactory.credentials; chmod 600 ~/.artifactory.credentials` with your credentials filled in (put a space in front to exclude the command from shell history).
+* Call `⍽ echo -n "«username»:«password»" >~/.artifactory.credentials; chmod 600 ~/.artifactory.credentials` with your credentials filled in (put a space in front to exclude the command from shell history).
 
 To fully understand the `dput` WebDAV plugin configuration and be able to customize it,
 read [WebDAV Plugin Configuration](https://github.com/jhermann/artifactory-debian/wiki/WebDAV-Plugin-Configuration).
