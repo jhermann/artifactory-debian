@@ -10,6 +10,7 @@ import os
 import sys
 import cgi
 import socket
+import fnmatch
 import getpass
 import httplib
 import urllib2
@@ -93,13 +94,23 @@ def get_host_argument(fqdn):
     return result
 
 
-def _distro2repo(distro):
-    """Map distribution names ot repo names according to config settings."""
-    # TODO: Implement _distro2repo()
-    return distro
+def _distro2repo(distro, repo_mappings):
+    """Map distribution names to repo names according to config settings."""
+    # Parse the mapping config
+    mappings = [(i.split('=', 1) if '=' in i else (i, i)) for i in repo_mappings.split()]
+
+    # Try to find a match
+    result = distro
+    for pattern, target in mappings:
+        if fnmatch.fnmatchcase(distro.lower(), pattern.lower()):
+            result = target
+            break
+
+    trace("Mapped distro '%(distro)s' to '%(repo)s'", distro=distro, repo=result)
+    return result
 
 
-def _resolve_incoming(incoming, fqdn, changes='', cli_params=None):
+def _resolve_incoming(incoming, fqdn, changes='', cli_params=None, repo_mappings=""):
     """Resolve the given `incoming` value to a working URL."""
     # Build fully qualified URL
     scheme, netloc, path, params, query, anchor = urlparse.urlparse(incoming, scheme="http", allow_fragments=True)
@@ -125,7 +136,7 @@ def _resolve_incoming(incoming, fqdn, changes='', cli_params=None):
 
     # Interpolate `url`
     pkgdata.update(dict(
-        fqdn=fqdn, repo=_distro2repo(pkgdata.get("distribution", "unknown")),
+        fqdn=fqdn, repo=_distro2repo(pkgdata.get("distribution", "unknown"), repo_mappings),
     ))
     pkgdata.update(cli_params or {})
     try:
@@ -211,7 +222,8 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
         cli_params = dict(cgi.parse_qsl(host_argument, keep_blank_values=True))
 
         # Prepare for uploading
-        incoming, repo_params = _resolve_incoming(incoming, fqdn, cli_params=cli_params)
+        incoming, repo_params = _resolve_incoming(incoming, fqdn, cli_params=cli_params,
+            repo_mappings=host_config.get("repo_mappings", ""))
         repo_params.update(cli_params)
         mindepth = int(repo_params.get("mindepth", "0"), 10)
         overwrite = int(repo_params.get("overwrite", "0"), 10)
@@ -249,6 +261,23 @@ upload.extended_info = {}
 
 class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
     """Local unittests."""
+
+    DISTRO2REPO_DATA = [
+        ("unknown", "incoming"),
+        ("foobar", "incoming"),
+        ("unstable", "snapshots"),
+        ("snapshots", "snapshots"),
+        ("foo-experimental", "snapshots"),
+        ("bar-experimental", "snapshots"),
+    ]
+
+    def test_distro2repo(self):
+        """Test distribution mapping."""
+        cfg = "snapshots unstable=snapshots *-experimental=snapshots *=incoming"
+
+        for distro, repo in self.DISTRO2REPO_DATA:
+            result = _distro2repo(distro, cfg)
+            self.assertEquals(result, repo)
 
     def test_resolve_incoming(self):
         """Test URL resolving."""

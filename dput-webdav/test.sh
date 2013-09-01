@@ -38,10 +38,16 @@ if test $(ls -1 build/*.changes | wc -l) -ne 1; then
     rm -rf build/artifactory-debian-webdav-test* build/deb 2>/dev/null || :
     mkdir -p build/deb
     pushd build/deb >/dev/null
+    export DEBFULLNAME="Tests R. Us"
+    export DEBEMAIL="tests@example.com"
     echo | dh_make -s --indep --createorig -p artifactory-debian-webdav-test_1.0
     dpkg-buildpackage -uc -us 
     popd >/dev/null
 fi
+
+echo
+echo "*** Test package metadata **"
+dpkg-deb -I build/artifactory-debian-webdav-test*.deb
 
 echo
 echo "*** Printing effective test config **"
@@ -57,6 +63,9 @@ egrep "^(FAILURE|FATAL|ERROR): " build/dput.log && fail "dput exited with an err
 grep ".repo.: .foo bar." build/dput.log >/dev/null || fail "Host argument passing doesn't work"
 grep "^D: webdav: Resolved login credentials to uploader:\\*" build/dput.log >/dev/null \
     || fail "Login env / file reference not resolved"
+
+dput_test 'artifactory-debian:integration-test' build/*.changes >build/dput2.log 2>&1 || :
+grep "/debian-local/incoming/" build/dput2.log >/dev/null || fail "Repository mapping doesn't work"
 
 echo
 if which pylint >/dev/null; then

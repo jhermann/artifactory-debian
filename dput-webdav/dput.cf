@@ -7,13 +7,20 @@ default_host_main = artifactory-debian
 progress_indicator = 2
 
 [artifactory-debian]
+method = webdav
 fqdn = repo.example.com:80
 login = file:$PRJDIR/build/artifactory-credentials
-incoming = /artifactory/debian-local/incoming/
-method = webdav
+#incoming = /artifactory/debian-local/incoming/
+incoming = http://{fqdn}/artifactory/debian-local/{repo}/
+#{source}/{upstream}/#mindepth=3&overwrite=0
+
 allow_unsigned_uploads = 1
 #run_lintian = 1
 #check_version = 1
+
+# extended config
+repo_mappings = snapshots unstable=snapshots *-experimental=snapshots *=incoming
+
+# just for integration tests
 extended_info = 1
-# overwrite = 1
 
