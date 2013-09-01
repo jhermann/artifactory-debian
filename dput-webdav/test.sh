@@ -32,7 +32,7 @@ echo
 echo "*** Python unit tests **"
 python -m webdav
 
-if test $(ls -1 build/*.changes | wc -l) -ne 1; then
+if test $(ls -1 build/artifactory-debian-webdav-test*.changes | wc -l) -ne 1; then
     echo
     echo "*** Preparing test package **"
     rm -rf build/artifactory-debian-webdav-test* build/deb 2>/dev/null || :
