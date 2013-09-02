@@ -5,7 +5,7 @@ and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/a
 
 | **dput-webdav** |
 |:-------------:|
-| [![Jenkins Status](http://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) |
+| [![Jenkins Status](http://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) [![Open Tasks](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/todo.png)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/tasks) |
 
 **Table of Contents**
 - [Overview](#overview)
