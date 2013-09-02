@@ -377,7 +377,7 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
         self.assertEquals(result, "http://explicit/incoming/")
 
         result, _ = _resolve_incoming(
-            "//{fqdn}/incoming/" if sys.version_info > (2, 5) else "//%(fqdn)s/incoming/",
+            "//{fqdn}/incoming/" if sys.version_info >= (2, 6) else "//%(fqdn)s/incoming/",
             "repo.example.com:80")
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
 
