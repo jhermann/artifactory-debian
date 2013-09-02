@@ -13,7 +13,7 @@ python:
 
 # command to install dependencies
 install:
-    - "sudo apt-get install dput"
+    - "sudo apt-get install dput dh-make dpkg-dev"
 
 # command to run tests
 script: "bash -x dput-webdav/test.sh"
