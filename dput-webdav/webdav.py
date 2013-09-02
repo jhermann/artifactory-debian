@@ -171,7 +171,24 @@ def _resolve_incoming(incoming, fqdn, changes=None, cli_params=None, repo_mappin
     return url, url_params
 
 
-def _dav_put(filepath, url, login, progress=None): # pylint: disable=too-many-locals
+def _url_connection(url, method, skip_host=False, skip_accept_encoding=False):
+    """Create HTTP[S] connection for `url`."""
+    # TODO: use "requests"?!
+    scheme, netloc, path, params, query, _ = urlparse.urlparse(url)
+    result = conn = (httplib.HTTPSConnection if scheme == "https" else httplib.HTTPConnection)(netloc)
+    try:
+        conn.putrequest(method, urlparse.urlunparse((None, None, path, params, query, None)), skip_host, skip_accept_encoding)
+        conn.putheader("User-Agent", "dput")
+        conn.putheader("Connection", "close")
+        conn = None
+    finally:
+        if conn:
+            conn.close() # close in case of errors
+
+    return result
+
+
+def _dav_put(filepath, url, login, progress=None):
     """Upload `filepath` to given `url` (referring to a WebDAV collection)."""
     basename = os.path.basename(filepath)
     fileurl = urlparse.urljoin(url.rstrip('/') + '/', basename)
@@ -184,16 +201,11 @@ def _dav_put(filepath, url, login, progress=None): # pylint: disable=too-many-lo
         if progress:
             handle = dputhelper.FileWithProgress(handle, ptype=progress, progressf=sys.stdout, size=size)
         trace("HTTP PUT to URL: %s" % fileurl)
-        scheme, netloc, path, params, query, _ = urlparse.urlparse(fileurl)
 
         try:
-            # TODO: use "requests"?!
-            conn = (httplib.HTTPSConnection if scheme == "https" else httplib.HTTPConnection)(netloc)
+            conn = _url_connection(fileurl, "PUT")
             try:
-                conn.putrequest("PUT", urlparse.urlunparse((None, None, path, params, query, None)))#, skip_accept_encoding=True
-                conn.putheader("User-Agent", "dput")
                 conn.putheader("Authorization", 'Basic %s' % login.encode('base64').strip())
-                conn.putheader("Connection", "close")
                 conn.putheader("Content-Length", str(size))
                 conn.endheaders()
 
@@ -224,7 +236,24 @@ def _dav_put(filepath, url, login, progress=None): # pylint: disable=too-many-lo
             raise urllib2.URLError(exc)
 
 
-def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-arguments, too-many-locals
+def _check_url_exists(url, mindepth=0):
+    """Check if an URL already exists."""
+    if mindepth:
+        scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
+        path = '/'.join(path.split('/')[:mindepth+1]).rstrip('/') + '/'
+        url = urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
+
+    trace("Checking existence of URL '%(url)s'", url=url)
+    try:
+        with closing(urllib2.urlopen(url)) as handle:
+            handle.read()
+    except urllib2.HTTPError, exc:
+        if exc.code == 404:
+            raise dputhelper.DputUploadFatalException("URL '%s' doesn't exist (%s)" % (url, exc))
+        raise
+
+
+def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-arguments
         debug, dummy, progress=None):
     """Upload the files via WebDAV."""
     assert sys.version_info >= (2, 5), "Your snake is a rotting corpse"
@@ -260,7 +289,8 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
         repo_params.update(cli_params)
         mindepth = int(repo_params.get("mindepth", "0"), 10)
         overwrite = int(repo_params.get("overwrite", "0"), 10)
-        # TODO: auth_handler = PromptingPasswordMgr(login)
+        # TODO: Add ability to enter missing password via terminal
+        #   auth_handler = PromptingPasswordMgr(login)
 
         # Special handling for integration test code
         if "integration-test" in cli_params:
@@ -275,8 +305,10 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
         else:
             # TODO: Check if .changes file already exists
             #if not overwrite:
-            # TODO: And also check for minmal path depth
-            #if mindepth:
+
+            # Check for existence of target path with minimal depth
+            if mindepth:
+                _check_url_exists(incoming, mindepth=mindepth)
 
             # Upload the files in the given order
             for filepath in files_to_upload:
