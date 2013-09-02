@@ -65,7 +65,7 @@ grep "^D: webdav: Resolved login credentials to uploader:\\*" build/dput.log >/d
     || fail "Login env / file reference not resolved"
 
 dput_test 'artifactory-debian:integration-test' build/*.changes >build/dput2.log 2>&1 || :
-grep "/debian-local/incoming/" build/dput2.log >/dev/null || fail "Repository mapping doesn't work"
+grep "/debian-local/snapshots/" build/dput2.log >/dev/null || fail "Repository mapping doesn't work"
 
 echo
 if which pylint >/dev/null; then
