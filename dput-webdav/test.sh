@@ -11,8 +11,10 @@ dput_test() {
     $dput --config dput.cf --debug --force --unchecked "$@"
 }
 
-mkdir -p build
 export PRJDIR=$(cd $(dirname "$0") && pwd)
+cd "$PRJDIR"
+mkdir -p build
+
 export ARTIFACTORY_CREDENTIALS="uploader:password"
 echo "$ARTIFACTORY_CREDENTIALS" >build/artifactory-credentials
 

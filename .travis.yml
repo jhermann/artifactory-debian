@@ -1,0 +1,20 @@
+#
+# Travis Project Descriptor
+#
+# See http://about.travis-ci.org/docs/user/build-configuration/
+#
+
+# build matrix
+language: python
+python:
+    - "2.7"
+    - "2.6"
+    - "2.5"
+
+# command to install dependencies
+install:
+    - "apt-get install dput"
+
+# command to run tests
+script: "bash -x dput-webdav/test.sh"
+
