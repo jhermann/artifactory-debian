@@ -11,8 +11,7 @@ method = webdav
 fqdn = repo.example.com:80
 login = file:$PRJDIR/build/artifactory-credentials
 #incoming = /artifactory/debian-local/incoming/
-incoming = http://{fqdn}/artifactory/debian-local/{repo}/
-#{source}/{upstream}/#mindepth=3&overwrite=0
+incoming = http://{fqdn}/artifactory/debian-local/{repo}/{source}/{upstream}/#mindepth=3&overwrite=0
 
 allow_unsigned_uploads = 1
 #run_lintian = 1

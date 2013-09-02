@@ -6,6 +6,7 @@
 """
 from __future__ import with_statement
 
+import re
 import os
 import sys
 import cgi
@@ -17,6 +18,7 @@ import urllib2
 import urlparse
 import unittest
 from contextlib import closing
+from email import parser as rfc2822_parser
 
 try:
     import dputhelper
@@ -34,6 +36,12 @@ def trace(msg, **kwargs):
     if trace.debug:
         print("D: webdav: " + (msg % kwargs))
 trace.debug = False
+
+
+def log(msg, **kwargs):
+    """Emit log message to stderr."""
+    sys.stderr.write("webdav: " + (msg % kwargs) + "\n")
+    sys.stderr.flush()
 
 
 def _resolve_credentials(login):
@@ -110,7 +118,7 @@ def _distro2repo(distro, repo_mappings):
     return result
 
 
-def _resolve_incoming(incoming, fqdn, changes='', cli_params=None, repo_mappings=""):
+def _resolve_incoming(incoming, fqdn, changes=None, cli_params=None, repo_mappings=""):
     """Resolve the given `incoming` value to a working URL."""
     # Build fully qualified URL
     scheme, netloc, path, params, query, anchor = urlparse.urlparse(incoming, scheme="http", allow_fragments=True)
@@ -132,19 +140,32 @@ def _resolve_incoming(incoming, fqdn, changes='', cli_params=None, repo_mappings
         else:
             changes = changes.read() # pylint: disable=maybe-no-member
 
-        # TODO: pkgdata = ...
+        pkgdata = dict([(key.lower().replace('-', '_'), val.strip())
+            for key, val in rfc2822_parser.HeaderParser().parsestr(changes).items()
+        ])
 
-    # Interpolate `url`
+    # Extend changes metadata
+    if "version" in pkgdata:
+        pkgdata["upstream"] = re.split(r"[-~]", pkgdata["version"])[0]
     pkgdata.update(dict(
         fqdn=fqdn, repo=_distro2repo(pkgdata.get("distribution", "unknown"), repo_mappings),
     ))
-    pkgdata.update(cli_params or {})
+    pkgdata.update(cli_params or {}) # CLI options can overwrite anything
+    trace("Collected metadata:\n    %(meta)s", meta="\n    ".join(["%s = %s" % (key, val)
+        for key, val in sorted(pkgdata.items())
+        if '\n' not in val # only print 'simple' values
+    ]))
+
+    # Interpolate `url`
     try:
-        url.format
-    except AttributeError:
-        url = url % pkgdata # Python 2.5
-    else:
-        url = url.format(**pkgdata) # Python 2.6+
+        try:
+            url.format
+        except AttributeError:
+            url = url % pkgdata # Python 2.5
+        else:
+            url = url.format(**pkgdata) # Python 2.6+
+    except KeyError, exc:
+        raise dputhelper.DputUploadFatalException("Unknown key (%s) in incoming templates '%s'" % (exc, incoming))
 
     trace("Resolved incoming to `%(url)s' params=%(params)r", url=url, params=url_params)
     return url, url_params
@@ -221,9 +242,21 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             host_argument = get_host_argument(fqdn)
         cli_params = dict(cgi.parse_qsl(host_argument, keep_blank_values=True))
 
+        # Handle .changes file
+        changes_file = [i for i in files_to_upload if i.endswith(".changes")]
+        if not changes_file:
+            log("WARN: No changes file found in %(n)d files to upload", n=len(files_to_upload))
+            changes_file = None
+        else:
+            if len(changes_file) > 1:
+                log("WARN: More than one changes file found in %(n)d files to upload,"
+                    " taking the 1st:\n    %(changes)s",
+                    n=len(files_to_upload), changes="\n    ".join(changes_file))
+            changes_file = changes_file[0]
+
         # Prepare for uploading
-        incoming, repo_params = _resolve_incoming(incoming, fqdn, cli_params=cli_params,
-            repo_mappings=host_config.get("repo_mappings", ""))
+        incoming, repo_params = _resolve_incoming(incoming, fqdn, changes=changes_file,
+            cli_params=cli_params, repo_mappings=host_config.get("repo_mappings", ""))
         repo_params.update(cli_params)
         mindepth = int(repo_params.get("mindepth", "0"), 10)
         overwrite = int(repo_params.get("overwrite", "0"), 10)
@@ -249,7 +282,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             for filepath in files_to_upload:
                 _dav_put(filepath, incoming, login, progress)
     except (dputhelper.DputUploadFatalException, socket.error, urllib2.URLError, EnvironmentError), exc:
-        print >> sys.stderr, "FATAL: %s" % exc
+        log("FATAL: %(exc)s", exc=exc)
         sys.exit(1)
 
 upload.extended_info = {}
