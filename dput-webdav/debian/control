@@ -1,0 +1,15 @@
+Source: dput-dav
+Section: devel
+Priority: extra
+Maintainer: Juergen Hermann <jh@web.de>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.2
+Homepage: https://github.com/jhermann/artifactory-debian
+#Vcs-Git: https://github.com/jhermann/artifactory-debian.git
+#Vcs-Browser: https://github.com/jhermann/artifactory-debian
+
+Package: dput-dav
+Architecture: all
+Depends: dput, ${misc:Depends}
+Description: dput derivative with extended WebDAV support
+ Built for dput 0.9.6.

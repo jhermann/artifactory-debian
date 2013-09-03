@@ -1,0 +1,15 @@
+The Debian Package dput-dav
+----------------------------
+
+The "webdav" dput plugin was written specifically with Artifactory in
+mind. It tries to be compatible to the http plugin, and offers the
+following new features:
+
+ * Login credentials can include the password.
+ * Incoming can be a full URL, also containing dynamic metadata.
+ * HTTPS support is provided by simply using a "https://..." URL.
+ * Extended features like mapping distributions to repository names.
+
+See https://github.com/jhermann/artifactory-debian/wiki for more.
+
+ -- Juergen Hermann <jh@web.de>  Tue, 03 Sep 2013 20:31:49 +0200

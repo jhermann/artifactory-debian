@@ -1,0 +1,3 @@
+# TODO: add diversion for dput?!
+##dput-dav usr/bin
+webdav.py usr/share/dput
