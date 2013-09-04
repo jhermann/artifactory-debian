@@ -403,7 +403,7 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
 
         # Unknown key
         self.assertRaises(dputhelper.DputUploadFatalException, _resolve_incoming,
-            "", "", "http://example.com/incoming/{not_defined_ever}/")
+            "", "", py25_format("http://example.com/incoming/{not_defined_ever}/"))
 
 
 if __name__ == "__main__":
