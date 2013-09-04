@@ -11,5 +11,5 @@ Homepage: https://github.com/jhermann/artifactory-debian
 Package: dput-webdav
 Architecture: all
 Depends: dput, ${misc:Depends}
-Description: dput derivative with extended WebDAV support
+Description: dput plugin with extended WebDAV support
  Built for dput 0.9.6.
