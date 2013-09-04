@@ -5,7 +5,7 @@
 set -e
 
 root=$(cd $(dirname "$0") && pwd)
-pkgdir=dput-webdav-0~$(date +'%Y.%m.%d')+git.$(git rev-parse HEAD)
+pkgdir=dput-webdav-1~$(date +'%Y.%m.%d')+git.$(git rev-parse HEAD)
 
 rm -rf build/dput-webdav_* build/$pkgdir 2>/dev/null || :
 mkdir -p build/$pkgdir
