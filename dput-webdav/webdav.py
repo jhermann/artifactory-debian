@@ -176,6 +176,7 @@ def _url_connection(url, method, skip_host=False, skip_accept_encoding=False):
     """Create HTTP[S] connection for `url`."""
     scheme, netloc, path, params, query, _ = urlparse.urlparse(url)
     result = conn = (httplib.HTTPSConnection if scheme == "https" else httplib.HTTPConnection)(netloc)
+    conn.debuglevel = int(trace.debug)
     try:
         conn.putrequest(method, urlparse.urlunparse((None, None, path, params, query, None)), skip_host, skip_accept_encoding)
         conn.putheader("User-Agent", "dput")
@@ -209,15 +210,17 @@ def _dav_put(filepath, url, login, progress=None):
         try:
             conn = _url_connection(fileurl, "PUT")
             try:
-                conn.putheader("Authorization", 'Basic %s' % login.encode('base64').strip())
+                conn.putheader("Authorization", 'Basic %s' % login.encode('base64').replace('\n', '').strip())
                 conn.putheader("Content-Length", str(size))
                 conn.endheaders()
 
+                conn.debuglevel = 0
                 while True:
                     data = handle.read(CHUNK_SIZE)
                     if not data:
                         break
                     conn.send(data)
+                conn.debuglevel = int(trace.debug)
 
                 resp = conn.getresponse()
                 if 200 <= resp.status <= 299:
@@ -249,6 +252,7 @@ def _check_url(url, allowed, mindepth=0):
 
     trace("Checking URL '%(url)s'", url=url)
     try:
+        # TODO: Check requests need to use login credentials
         with closing(urllib2.urlopen(url)) as handle:
             handle.read()
             code = handle.code
