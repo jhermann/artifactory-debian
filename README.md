@@ -128,7 +128,6 @@ Or simply install a package via `apt-get`.
 
 
 ## Package Uploading
-**Not yet FULLY implemented**
 
 ### 'webdav' Upload Method for 'dput'
 
@@ -154,7 +153,7 @@ Support for [dput-ng](http://people.debian.org/~paultag/dput-ng/) might be a goo
 **Package Installation**
 
 Download the latest 
-[GitHub master build](http://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-webdav_0%7Emaster_all.deb)
+[GitHub master build](http://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-webdav_1%7Emaster_all.deb)
 and install it with either `dpkg -i` or directly from your browser, using the *Ubuntu Software Center* or a similar tool.
 
 To install a **release version** without adding Bintray as a package source, run these commands as `root`:
