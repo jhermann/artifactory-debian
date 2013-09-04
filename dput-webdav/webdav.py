@@ -174,7 +174,6 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
 
 def _url_connection(url, method, skip_host=False, skip_accept_encoding=False):
     """Create HTTP[S] connection for `url`."""
-    # TODO: use "requests"?!
     scheme, netloc, path, params, query, _ = urlparse.urlparse(url)
     result = conn = (httplib.HTTPSConnection if scheme == "https" else httplib.HTTPConnection)(netloc)
     try:
@@ -315,6 +314,10 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             print "host arguments = ",
             pprint.pprint(cli_params)
         else:
+            # TODO: "bintray" REST API support
+            #   POST /packages/:subject/:repo
+            #   POST /packages/:subject/:repo/:package/versions
+
             # Check if .changes file already exists
             if not overwrite and changes_file:
                 try:
