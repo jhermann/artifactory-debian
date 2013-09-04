@@ -352,6 +352,11 @@ upload.extended_info = {}
 # Unit Tests
 #
 
+def py25_format(template):
+    """Helper for testing under Python 2.5."""
+    return template if sys.version_info >= (2, 6) else template.replace("{", "%(").replace("}", ")s")
+
+
 class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
     """Local unittests."""
 
@@ -384,14 +389,13 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
         result, _ = _resolve_incoming("repo.example.com:80", "", "//explicit/incoming/")
         self.assertEquals(result, "http://explicit/incoming/")
 
-        result, _ = _resolve_incoming("repo.example.com:80", "",
-            "//{fqdn}/incoming/" if sys.version_info >= (2, 6) else "//%(fqdn)s/incoming/")
+        result, _ = _resolve_incoming("repo.example.com:80", "", py25_format("//{fqdn}/incoming/"))
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
 
         _, params = _resolve_incoming("", "", "incoming#a=1&b=c")
         self.assertEquals(params, dict(a="1", b="c"))
 
-        result, _ = _resolve_incoming("repo.example.com:80", "johndoe", "incoming/{loginuser}")
+        result, _ = _resolve_incoming("repo.example.com:80", "johndoe", py25_format("incoming/{loginuser}"))
         self.assertEquals(result, "http://repo.example.com:80/incoming/johndoe/")
 
         # Unsupported URL scheme
