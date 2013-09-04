@@ -1,0 +1,4 @@
+*.log
+dput-webdav.substvars
+dput-webdav/
+files

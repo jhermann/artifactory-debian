@@ -5,9 +5,9 @@
 set -e
 
 root=$(cd $(dirname "$0") && pwd)
-pkgdir=dput-dav-0~$(date +'%Y.%m.%d')+git.$(git rev-parse HEAD)
+pkgdir=dput-webdav-0~$(date +'%Y.%m.%d')+git.$(git rev-parse HEAD)
 
-rm -rf build/dput-dav_* build/$pkgdir 2>/dev/null || :
+rm -rf build/dput-webdav_* build/$pkgdir 2>/dev/null || :
 mkdir -p build/$pkgdir
 pushd build/$pkgdir >/dev/null
 
@@ -39,6 +39,6 @@ dpkg-buildpackage -uc -us
 popd >/dev/null
 
 echo
-dpkg-deb -c build/dput-dav_*.deb
+dpkg-deb -c build/dput-webdav_*.deb
 echo
-dpkg-deb -I build/dput-dav_*.deb
+dpkg-deb -I build/dput-webdav_*.deb

@@ -1,5 +1,5 @@
-The Debian Package dput-dav
-----------------------------
+The Debian Package dput-webdav
+------------------------------
 
 The "webdav" dput plugin was written specifically with Artifactory in
 mind. It tries to be compatible to the http plugin, and offers the
