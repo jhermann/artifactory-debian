@@ -1,5 +1,11 @@
+dput-webdav (1.0.1) noplat; urgency=low
+
+  * ...
+
+ -- Juergen Hermann <jh@web.de>  Wed, 04 Sep 2013 19:33:31 +0200
+
 dput-webdav (1.0) noplat; urgency=low
 
   * Initial release.
 
- -- Juergen Hermann (1&1 Internet AG) <Juergen.Hermann@1und1.de>  Wed, 04 Sep 2013 19:05:03 +0200
+ -- Juergen Hermann <jh@web.de>  Wed, 04 Sep 2013 19:05:03 +0200
