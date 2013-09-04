@@ -118,7 +118,7 @@ def _distro2repo(distro, repo_mappings):
     return result
 
 
-def _resolve_incoming(incoming, fqdn, changes=None, cli_params=None, repo_mappings=""):
+def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo_mappings=""):
     """Resolve the given `incoming` value to a working URL."""
     # Build fully qualified URL
     scheme, netloc, path, params, query, anchor = urlparse.urlparse(incoming, scheme="http", allow_fragments=True)
@@ -145,6 +145,7 @@ def _resolve_incoming(incoming, fqdn, changes=None, cli_params=None, repo_mappin
         ])
 
     # Extend changes metadata
+    pkgdata["loginuser"] = login.split(':')[0]
     if "version" in pkgdata:
         pkgdata["upstream"] = re.split(r"[-~]", pkgdata["version"])[0]
     pkgdata.update(dict(
@@ -295,7 +296,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             changes_file = changes_file[0]
 
         # Prepare for uploading
-        incoming, repo_params = _resolve_incoming(incoming, fqdn, changes=changes_file,
+        incoming, repo_params = _resolve_incoming(fqdn, login, incoming, changes=changes_file,
             cli_params=cli_params, repo_mappings=host_config.get("repo_mappings", ""))
         repo_params.update(cli_params)
         mindepth = int(repo_params.get("mindepth", "0"), 10)
@@ -366,25 +367,32 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
 
     def test_resolve_incoming(self):
         """Test URL resolving."""
-        result, params = _resolve_incoming("incoming", "repo.example.com:80")
+        result, params = _resolve_incoming("repo.example.com:80", "", "incoming")
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
         self.assertEquals(params, {})
 
-        result, _ = _resolve_incoming("https:///incoming/", "repo.example.com:80")
+        result, _ = _resolve_incoming("repo.example.com:80", "", "https:///incoming/")
         self.assertEquals(result, "https://repo.example.com:80/incoming/")
 
-        result, _ = _resolve_incoming("//explicit/incoming/", "repo.example.com:80")
+        result, _ = _resolve_incoming("repo.example.com:80", "", "//explicit/incoming/")
         self.assertEquals(result, "http://explicit/incoming/")
 
-        result, _ = _resolve_incoming(
-            "//{fqdn}/incoming/" if sys.version_info >= (2, 6) else "//%(fqdn)s/incoming/",
-            "repo.example.com:80")
+        result, _ = _resolve_incoming("repo.example.com:80", "",
+            "//{fqdn}/incoming/" if sys.version_info >= (2, 6) else "//%(fqdn)s/incoming/")
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
 
-        _, params = _resolve_incoming("incoming#a=1&b=c", "")
+        _, params = _resolve_incoming("", "", "incoming#a=1&b=c")
         self.assertEquals(params, dict(a="1", b="c"))
 
-        self.assertRaises(dputhelper.DputUploadFatalException, _resolve_incoming, "file:///incoming/", "")
+        result, _ = _resolve_incoming("repo.example.com:80", "johndoe", "incoming/{loginuser}")
+        self.assertEquals(result, "http://repo.example.com:80/incoming/johndoe/")
+
+        # Unsupported URL scheme
+        self.assertRaises(dputhelper.DputUploadFatalException, _resolve_incoming, "", "", "file:///incoming/")
+
+        # Unknown key
+        self.assertRaises(dputhelper.DputUploadFatalException, _resolve_incoming,
+            "", "", "http://example.com/incoming/{not_defined_ever}/")
 
 
 if __name__ == "__main__":
