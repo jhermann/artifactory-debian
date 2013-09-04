@@ -17,6 +17,7 @@ and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/a
 	- ['webdav' Upload Method for 'dput'](#webdav-upload-method-for-dput)
 	- [Installing the 'webdav' Plugin](#installing-the-webdav-plugin)
 	- ['webdav' Plugin Configuration](#webdav-plugin-configuration)
+	- [Uploading to Bintray](#uploading-to-bintray)
 - [Acknowledgements](#acknowledgements)
 
 
@@ -204,6 +205,36 @@ allow_unsigned_uploads = 1
 To fully understand the `dput` WebDAV plugin configuration and be able to customize it,
 read [WebDAV Plugin Configuration](https://github.com/jhermann/artifactory-debian/wiki/WebDAV-Plugin-Configuration).
 Also refer to `man dput.cf` for the common configuration options shared by all upload methods.
+
+
+### Uploading to Bintray
+
+To use the `webdav` plugin for uploads to [Bintray](https://bintray.com/), add this configuration to your account:
+* Extend your `~/.dput.cf` with this snippet:
+
+```ini
+[bintray]
+method = webdav
+fqdn = api.bintray.com
+login = file:~/.bintray.apikey
+incoming = https://{fqdn}/content/{loginuser}/deb/{source}/{upstream}/#mindepth=0&overwrite=1
+allow_unsigned_uploads = 1
+```
+
+* Put your login name and API key into `~/.bintray.apikey` (`login:api-key`); don't forget to `chmod 600` that file.
+
+
+As an example, the following is the log of the first release, where `dput-webdav` uploaded itself:
+
+```sh
+$ dput bintray dput-webdav*changes
+Uploading to bintray (via webdav to api.bintray.com):
+  Uploading dput-webdav_1.0.dsc:  done.
+  Uploading dput-webdav_1.0.tar.gz: / done.
+  Uploading dput-webdav_1.0_all.deb: / done.
+  Uploading dput-webdav_1.0_amd64.changes: / done.
+Successfully uploaded packages.
+```
 
 
 ## Acknowledgements
