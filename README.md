@@ -156,11 +156,13 @@ Download the latest
 [GitHub master build](http://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-webdav_1%7Emaster_all.deb)
 and install it with either `dpkg -i` or directly from your browser, using the *Ubuntu Software Center* or a similar tool.
 
-To install a **release version** without adding Bintray as a package source, run these commands as `root`:
+To install a **release version** via adding Bintray as a package source, run these commands as `root`:
 
 ```sh
-wget http://dl.bintray.com/jhermann/deb/dput-webdav_1.0_all.deb
-dpkg -i dput-webdav_1.0_all.deb
+echo "deb http://dl.bintray.com/jhermann/deb /" \
+    >/etc/apt/sources.list.d/bintray-jhermann.list
+apt-get update
+apt-get install -o "APT::Get::AllowUnauthenticated=yes" dput-webdav
 ```
 
 
