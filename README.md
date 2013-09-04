@@ -3,9 +3,9 @@
 `artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository, 
 and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/artifactory-debian/wiki).
 
-| **dput-webdav** |
-|:-------------:|
-| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian) [![Jenkins Status](http://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) [![Open Tasks](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/todo.png)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/tasks) |
+| **dput-webdav** | **Ohloh** |
+|:-------------:|:-------------:|
+| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian) [![Jenkins Status](http://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) [![Open Tasks](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/todo.png)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/tasks) | [![Ohloh stats](https://www.ohloh.net/p/artifactory-debian/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/artifactory-debian) |
 
 **Table of Contents**
 - [Overview](#overview)
