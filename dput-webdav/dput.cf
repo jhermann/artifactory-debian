@@ -23,3 +23,10 @@ repo_mappings = snapshots unstable=snapshots *-experimental=snapshots *=incoming
 # just for integration tests
 extended_info = 1
 
+[bintray]
+method = webdav
+fqdn = api.bintray.com
+login = file:~/.bintray.apikey
+incoming = https://{fqdn}/content/{loginuser}/deb/{source}/{upstream}/#mindepth=3&overwrite=0
+allow_unsigned_uploads = 1
+
