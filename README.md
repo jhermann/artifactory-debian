@@ -5,7 +5,7 @@ and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/a
 
 | **dput-webdav** | **Ohloh** |
 |:-------------:|:-------------:|
-| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian) [![Jenkins Status](http://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) [![Open Tasks](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/todo.png)](http://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/tasks) | [![Ohloh stats](https://www.ohloh.net/p/artifactory-debian/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/artifactory-debian) |
+| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian) [![Jenkins Status](https://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](https://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) [![Open Tasks](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/todo.png)](https://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/tasks) | [![Ohloh stats](https://www.ohloh.net/p/artifactory-debian/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/artifactory-debian) |
 
 **Table of Contents**
 - [Overview](#overview)
@@ -153,7 +153,7 @@ Support for [dput-ng](http://people.debian.org/~paultag/dput-ng/) might be a goo
 **Package Installation**
 
 Download the latest 
-[GitHub master build](http://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-webdav_1%7Emaster_all.deb)
+[GitHub master build](https://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-webdav_1%7Emaster_all.deb)
 and install it with either `dpkg -i` or directly from your browser, using the *Ubuntu Software Center* or a similar tool.
 
 To install a **release version** via adding Bintray as a package source, run these commands as `root`:
