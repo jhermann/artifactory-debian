@@ -40,6 +40,7 @@ trace.debug = False
 
 def log(msg, **kwargs):
     """Emit log message to stderr."""
+    sys.stdout.flush()
     sys.stderr.write("webdav: " + (msg % kwargs) + "\n")
     sys.stderr.flush()
 
@@ -282,6 +283,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             host_config = dict(upload.extended_info["config"].items(upload.extended_info["host"]))
             host_argument = host_config.get(upload.extended_info["host"], "")
         else:
+            # TODO: add sys.getframe() hack to make this work with an unpatched dput
             host_config = {}
             host_argument = get_host_argument(fqdn)
         cli_params = dict(cgi.parse_qsl(host_argument, keep_blank_values=True))
@@ -301,6 +303,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
         # Prepare for uploading
         incoming, repo_params = _resolve_incoming(fqdn, login, incoming, changes=changes_file,
             cli_params=cli_params, repo_mappings=host_config.get("repo_mappings", ""))
+        log("INFO: Destination base URL is\n    %(url)s", url=urllib2.quote(incoming, safe=":/~;#"))
         repo_params.update(cli_params)
         mindepth = int(repo_params.get("mindepth", "0"), 10)
         overwrite = int(repo_params.get("overwrite", "0"), 10)
