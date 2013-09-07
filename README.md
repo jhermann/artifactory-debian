@@ -108,7 +108,7 @@ artifactory-debian/indexing/deb-index.sh refresh
 ```
 
 * Start the job via *Build Now*.
-* Check in the Jenkins log and Artifactory web interface that the index files were generated and uploaded (cf. above schreenshot).
+* Check in the Jenkins log and Artifactory web interface that the index files were generated and uploaded (cf. above screenshot).
 
 And you're now ready to use your shiny new toy…
 
