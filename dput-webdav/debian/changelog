@@ -1,8 +1,10 @@
-dput-webdav (1.0.1) noplat; urgency=low
+dput-webdav (1.1) noplat; urgency=low
 
-  * ...
+  * Get extended configuration in absence of the patch
+    (paid for by an ugly hack)
+  * Added "simulate" host argument for testing
 
- -- Juergen Hermann <jh@web.de>  Wed, 04 Sep 2013 19:33:31 +0200
+ -- Juergen Hermann <jh@web.de>  Mon, 09 Sep 2013 12:56:00 +0200
 
 dput-webdav (1.0) noplat; urgency=low
 

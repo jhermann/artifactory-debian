@@ -86,23 +86,6 @@ class PromptingPasswordMgr(urllib2.HTTPPasswordMgr):
         return authinfo
 
 
-def get_host_argument(fqdn):
-    """ We have to jump through several hoops to get to our config section,
-        which in turn is the only place where the host argument is available.
-    """
-    import __main__ as dput # if only we would get passed our config section...
-    config = dput.config # pylint: disable=no-member
-
-    result = ""
-    for section in config.sections():
-        if (config.has_option(section, "fqdn")
-                and config.get(section, "fqdn") == fqdn
-                and config.has_option(section, section)):
-            result = config.get(section, section)
-
-    return result
-
-
 def _distro2repo(distro, repo_mappings):
     """Map distribution names to repo names according to config settings."""
     # Parse the mapping config
@@ -269,24 +252,61 @@ def _check_url(url, allowed, mindepth=0):
     trace("Code %(code)d OK for URL '%(url)s'", url=url, code=code)
 
 
+def _get_host_argument(fqdn):
+    """ We have to jump through several hoops to get to our config section,
+        which in turn is the only place where the host argument is available.
+    """
+    import __main__ as dput # if only we would get passed our config section...
+    config = dput.config # pylint: disable=no-member
+
+    result = ""
+    for section in config.sections():
+        if (config.has_option(section, "fqdn")
+                and config.get(section, "fqdn") == fqdn
+                and config.has_option(section, section)):
+            result = config.get(section, section)
+
+    return result
+
+
+def _get_config_data():
+    """Get configuration section for the chosen host, and CLI host parameters."""
+    # Without the patch applied, fall back to ugly hacks
+    if not upload.extended_info:
+        try:
+            caller = sys._getframe(2)
+        except AttributeError:
+            pass # somehow not CPython
+        else:
+            config = caller.f_globals.get("config")
+            host = caller.f_locals.get("host")
+            del caller
+            if config and host:
+                upload.extended_info = dict(config=config, host=host)
+
+    if upload.extended_info:
+        host_config = dict(upload.extended_info["config"].items(upload.extended_info["host"]))
+        host_argument = host_config.get(upload.extended_info["host"], "")
+    else:
+        host_config = {}
+        host_argument = _get_host_argument(fqdn)
+        log("WARN: Extended host configuration not available!")
+
+    # Parse "host:key=val;..." argument from command line into a dict
+    cli_params = dict(cgi.parse_qsl(host_argument.replace(',', ';'), keep_blank_values=True))
+
+    return host_config, cli_params
+
+
 def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-arguments
         debug, dummy, progress=None):
     """Upload the files via WebDAV."""
-    assert sys.version_info >= (2, 5), "Your snake is a rotting corpse"
+    assert sys.version_info >= (2, 5), "Your snake is a rotting corpse (Python 2.5+ required)"
     trace.debug = bool(debug)
 
     try:
+        host_config, cli_params = _get_config_data()
         login = _resolve_credentials(login)
-
-        # Try to get host argument from command line
-        if upload.extended_info:
-            host_config = dict(upload.extended_info["config"].items(upload.extended_info["host"]))
-            host_argument = host_config.get(upload.extended_info["host"], "")
-        else:
-            # TODO: add sys.getframe() hack to make this work with an unpatched dput
-            host_config = {}
-            host_argument = get_host_argument(fqdn)
-        cli_params = dict(cgi.parse_qsl(host_argument, keep_blank_values=True))
 
         # Handle .changes file
         changes_file = [i for i in files_to_upload if i.endswith(".changes")]
@@ -343,7 +363,10 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
 
             # Upload the files in the given order
             for filepath in files_to_upload:
-                _dav_put(filepath, incoming, login, progress)
+                if "simulate" in cli_params:
+                    log("WOULD upload '%(filename)s'", filename=os.path.basename(filepath))
+                else:
+                    _dav_put(filepath, incoming, login, progress)
     except (dputhelper.DputUploadFatalException, socket.error, urllib2.URLError, EnvironmentError), exc:
         log("FATAL: %(exc)s", exc=exc)
         sys.exit(1)
