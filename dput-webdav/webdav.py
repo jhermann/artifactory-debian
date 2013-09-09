@@ -269,12 +269,12 @@ def _get_host_argument(fqdn):
     return result
 
 
-def _get_config_data():
+def _get_config_data(fqdn):
     """Get configuration section for the chosen host, and CLI host parameters."""
     # Without the patch applied, fall back to ugly hacks
     if not upload.extended_info:
         try:
-            caller = sys._getframe(2)
+            caller = sys._getframe(2) # pylint: disable=protected-access
         except AttributeError:
             pass # somehow not CPython
         else:
@@ -305,7 +305,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
     trace.debug = bool(debug)
 
     try:
-        host_config, cli_params = _get_config_data()
+        host_config, cli_params = _get_config_data(fqdn)
         login = _resolve_credentials(login)
 
         # Handle .changes file
