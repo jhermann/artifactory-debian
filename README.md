@@ -205,8 +205,10 @@ incoming = http://{fqdn}/artifactory/debian-local/{repo}/{source}/{upstream}/#mi
 allow_unsigned_uploads = 1
 #run_lintian = 1
 #check_version = 1
-# post_upload_command = curl ... http://jenkins/...
 # repo_mappings = unstable=snapshots *-experimental=snapshots *=incoming
+
+# trigger Jenkins reindex job after successful upload
+#post_upload_command = curl -k "<JENKINS_URL>/job/artifactory-debian-reindex/build?token=DOIT&cause=dput+upload"
 ```
 
 * Call `⍽ echo -n "«username»:«password»" >~/.artifactory.credentials; chmod 600 ~/.artifactory.credentials` with your credentials filled in (put a space in front to exclude the command from shell history).
