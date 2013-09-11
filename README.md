@@ -23,6 +23,14 @@ and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/a
 
 ## Overview
 
+Principles of *Continuous Delivery* mandate that you propagate a binary artifact,
+once it's built, unchanged through the different quality gates and deployment stages of
+your delivery pipeline. The need for keeping them in ideally a single place becomes obvious
+pretty fast, together with similar build artifacts like Java JARs. Artifactory offers the
+additional advantage of attribute management on top of purely storing them, so you can for example
+add cryptographic signatures of passed quality gates and the like, when a candidate release
+progresses through the pipeline.
+
 As long as [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613) remains unresolved, 
 this is a way to manage your Debian packages within Artifactory here and now.
 It offers a shell script that indexes a set of Debian repos located in Artifactory,
