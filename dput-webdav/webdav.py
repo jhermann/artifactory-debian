@@ -54,8 +54,13 @@ def _resolve_credentials(login):
         result = os.path.abspath(os.path.expanduser(result.split(':', 1)[1]))
         with closing(open(result, "r")) as handle:
             result = handle.read().strip()
-    trace("Resolved login credentials to %(user)s:%(pwd)s",
-        user=result.split(':', 1)[0], pwd='*' * len(result.split(':', 1)[1]), )
+
+    try:
+        user, pwd = result.split(':', 1)
+    except ValueError:
+        user, pwd = result, ""
+    trace("Resolved login credentials to %(user)s:%(pwd)s", user=user, pwd='*' * len(pwd))
+
     return result
 
 

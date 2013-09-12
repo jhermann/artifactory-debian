@@ -1,3 +1,9 @@
+dput-webdav (1.2) noplat; urgency=low
+
+  * Fixed issue with logging password-less credentials
+
+ -- Juergen Hermann <jh@web.de>  Thu, 12 Sep 2013 18:04:58 +0200
+
 dput-webdav (1.1) noplat; urgency=low
 
   * Get extended configuration in absence of the patch
