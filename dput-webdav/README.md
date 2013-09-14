@@ -7,5 +7,5 @@ login credentials can include the password,
 "incoming" can be a full URL (optionally containing dynamic package metadata, and supporting HTTPS),
 and distributions can be mapped to repository names.
 
-See [Package Uploading](/jhermann/artifactory-debian/#package-uploading) for more.
+See [Package Uploading](https://github.com/jhermann/artifactory-debian/#package-uploading) for more.
 
