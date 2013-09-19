@@ -244,7 +244,8 @@ allow_unsigned_uploads = 1
 ```
 
 * Put your login name and API key into `~/.netrc` (and don't forget to `chmod 600` that file):
-```ini
+
+```
 machine api.bintray.com
     login YOURUSERNAME
     password 00...YOURAPIKEY...ff
