@@ -238,12 +238,17 @@ To use the `webdav` plugin for uploads to [Bintray](https://bintray.com/), add t
 [bintray]
 method = webdav
 fqdn = api.bintray.com
-login = file:~/.bintray.apikey
+login = netrc:
 incoming = https://{fqdn}/content/{loginuser}/deb/{source}/{upstream}/#mindepth=0&overwrite=1
 allow_unsigned_uploads = 1
 ```
 
-* Put your login name and API key into `~/.bintray.apikey` (`login:api-key`); don't forget to `chmod 600` that file.
+* Put your login name and API key into `~/.netrc` (and don't forget to `chmod 600` that file):
+```ini
+machine api.bintray.com
+    login YOURUSERNAME
+    password 00...YOURAPIKEY...ff
+```
 
 
 As an example, the following is the log of the first release, where `dput-webdav` uploaded itself:

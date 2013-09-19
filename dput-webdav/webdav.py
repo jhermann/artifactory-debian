@@ -10,6 +10,7 @@ import re
 import os
 import sys
 import cgi
+import netrc
 import socket
 import fnmatch
 import getpass
@@ -45,22 +46,37 @@ def log(msg, **kwargs):
     sys.stderr.flush()
 
 
-def _resolve_credentials(login):
+def _resolve_credentials(fqdn, login):
     """Look up special forms of credential references."""
     result = login
     if "$" in result:
         result = os.path.expandvars(result)
-    if result.startswith("file:"):
-        result = os.path.abspath(os.path.expanduser(result.split(':', 1)[1]))
-        with closing(open(result, "r")) as handle:
-            result = handle.read().strip()
 
-    try:
-        user, pwd = result.split(':', 1)
-    except ValueError:
-        user, pwd = result, ""
+    if result.startswith("netrc:"):
+        result = result.split(':', 1)[1]
+        if result:
+            result = os.path.abspath(os.path.expanduser(result))
+        accounts = netrc.netrc(result or None)
+        account = accounts.authenticators(fqdn)
+        if not account or not(account[0] or account[1]):
+            raise dputhelper.DputUploadFatalException("Cannot find account for host %s in %s netrc file" % (
+                fqdn, result or "default"))
+
+        # account is (login, account, password)
+        user, pwd = account[0] or account[1], account[2] or ""
+        result = "%s:%s" % (user, pwd)
+    else:
+        if result.startswith("file:"):
+            result = os.path.abspath(os.path.expanduser(result.split(':', 1)[1]))
+            with closing(open(result, "r")) as handle:
+                result = handle.read().strip()
+
+        try:
+            user, pwd = result.split(':', 1)
+        except ValueError:
+            user, pwd = result, ""
+
     trace("Resolved login credentials to %(user)s:%(pwd)s", user=user, pwd='*' * len(pwd))
-
     return result
 
 
@@ -311,7 +327,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
 
     try:
         host_config, cli_params = _get_config_data(fqdn)
-        login = _resolve_credentials(login)
+        login = _resolve_credentials(fqdn, login)
 
         # Handle .changes file
         changes_file = [i for i in files_to_upload if i.endswith(".changes")]
