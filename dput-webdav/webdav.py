@@ -145,6 +145,11 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
         else:
             changes = changes.read() # pylint: disable=maybe-no-member
 
+        if changes.startswith("-----BEGIN PGP SIGNED MESSAGE-----"):
+            # Let someone else check this, we don't care a bit; gimme the data already
+            trace("Extracting package metadata from PGP signed message...")
+            changes = changes.split("-----BEGIN PGP")[1].replace('\r', '').split('\n\n', 1)[1]
+
         pkgdata = dict([(key.lower().replace('-', '_'), val.strip())
             for key, val in rfc2822_parser.HeaderParser().parsestr(changes).items()
         ])
@@ -456,4 +461,3 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
 if __name__ == "__main__":
     print("artifactory webdav plugin tests")
     unittest.main()
-
