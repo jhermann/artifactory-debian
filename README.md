@@ -1,6 +1,6 @@
 # ![Logo](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/artifactory-debian-logo.png) Debian Repositories in Artifactory
 
-`artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository, 
+`artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository,
 and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/artifactory-debian/wiki).
 
 | **dput-webdav** | **Ohloh** |
@@ -33,7 +33,7 @@ additional advantage of attribute management on top of storing the contained fil
 With that you can for example add cryptographic signatures of passed quality gates and the like,
 when a candidate release progresses through the pipeline.
 
-As long as [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613) remains unresolved, 
+As long as [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613) remains unresolved,
 this project enables you to manage your Debian packages within Artifactory here and now.
 It offers a shell script that indexes a set of Debian repos located in Artifactory,
 and a `dput` plugin that allows you to continue to use the standard Debian tool chain.
@@ -49,7 +49,7 @@ In the Artifactory web interface, the final result after following the setup ins
 
 ## Repository Setup
 
-Detailed information about the initial repository setup can be found at 
+Detailed information about the initial repository setup can be found at
 [Configuration of Artifactory and Repository Indexing](https://github.com/jhermann/artifactory-debian/wiki/Configuration-of-Artifactory-and-Repository-Indexing).
 What follows is a shorter, no-nonsense version.
 
@@ -74,11 +74,11 @@ Now you can instantly start to upload packages into `debian-local`.
 ### Indexing Host Configuration
 
 In order for `apt-get` to find packages, index data needs to be generated (what `apt-get update` downloads).
-This is what the script `deb-index.sh` does; the script and a configuration example can be found in the 
+This is what the script `deb-index.sh` does; the script and a configuration example can be found in the
 [indexing](https://github.com/jhermann/artifactory-debian/tree/master/indexing) directory.
 
-You can use any host that has network access to your Artifactory server for indexing, and 
-run the index task via either a crontab entry, or as a job on a continuous integration server. 
+You can use any host that has network access to your Artifactory server for indexing, and
+run the index task via either a crontab entry, or as a job on a continuous integration server.
 This describes a Jenkins setup, for using `cron` just adapt the Jenkins configuration steps accordingly.
 
 **On your workstation**
@@ -104,7 +104,7 @@ sudo ./deb-index.sh setup "http://repo.example.com/artifactory/"
 * Install the `EnvInject` Jenkins plugin, if you don't already have it.
 * Create a Jenkins job bound to the slave where you called `deb-index.sh setup`:
   * Set the workspace checkout location to the configuration files you just committed.
-  * Add the `ARTIFACTORY_CREDENTIALS` environment variable with an account (`user:pwd`) having uploading permission, at the *Inject passwords to the build as environment variables* setting of *Build Environment*. 
+  * Add the `ARTIFACTORY_CREDENTIALS` environment variable with an account (`user:pwd`) having uploading permission, at the *Inject passwords to the build as environment variables* setting of *Build Environment*.
   * Add a *Shell Build Step* like follows:
 
 ```sh
@@ -141,13 +141,13 @@ Or simply install a package via `apt-get`.
 
 ### 'webdav' Upload Method for 'dput'
 
-`dput` conveniently provides a plugin directory for uploading methods, 
+`dput` conveniently provides a plugin directory for uploading methods,
 so we just use that to add Artifactory support.
-The `http` plugin of `dput` could be used to PUT packages into Artifactory, 
+The `http` plugin of `dput` could be used to PUT packages into Artifactory,
 but is thoroughly broken (at least the one I get on Ubuntu 12.04).
 
 Besides that, it lacks some features I consider essential, so I decided to write a new `webdav` plugin
-specifically with Artifactory in mind. It tries to be compatible to the `http` plugin, 
+specifically with Artifactory in mind. It tries to be compatible to the `http` plugin,
 and offers the following new features:
 * `login` credentials can include the password.
 * `incoming` can be a full URL, also containing dynamic (package) metadata.
@@ -162,7 +162,7 @@ Support for [dput-ng](http://people.debian.org/~paultag/dput-ng/) might be a goo
 
 **Package Installation**
 
-Download the latest 
+Download the latest
 [GitHub master build](https://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-webdav_1%7Emaster_all.deb)
 and install it with either `dpkg -i` or directly from your browser, using the *Ubuntu Software Center* or a similar tool.
 
@@ -189,7 +189,7 @@ sudo bash -c "umask 0133; curl -skS -o /usr/share/dput/webdav.py \
 
 **Other Installation Options**
 
-For an in-depth discussion of options, see the 
+For an in-depth discussion of options, see the
 [Detailed Install Instructions](https://github.com/jhermann/artifactory-debian/wiki/Detailed-Install-Instructions)
 wiki page.
 
@@ -243,7 +243,7 @@ incoming = https://{fqdn}/content/{loginuser}/deb/{source}/{upstream}/#mindepth=
 allow_unsigned_uploads = 1
 ```
 
-* Put your login name and API key into `~/.netrc` (and don't forget to `chmod 600` that file):
+* Put your login name and API key into `~/.netrc` (and don't forget to `chmod 600` that file); the API key you'll find in [your profile](https://bintray.com/profile/edit) when you click on `API Key` in the sidebar menu:
 
 ```
 machine api.bintray.com
@@ -272,4 +272,3 @@ Thanks to…
 * [Inkscape](http://inkscape.org/) and [Shutter](https://en.wikipedia.org/wiki/Shutter_%28software%29) for eye candy.
 * [DocToc](http://doctoc.herokuapp.com/) and Thorsten Lorenz for easy TOC maintenance.
 * [1&1](https://github.com/1and1) for free ☕ ☕ ☕ and ⌛.
-
