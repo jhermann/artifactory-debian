@@ -88,6 +88,9 @@ reindex() { # create index files in current working directory
         mkdir -p ${repo}
         find ${repo} -type l -print0 | xargs -0i+ rm "+" # clean existing links
 
+        # make sure we have a proper mount
+        test -d $repo_mount/${repo} || fail "$repo_mount/${repo} doesn't exist"
+
         # link all package subdirs for index creation
         find $repo_mount/${repo} -mindepth 1 -maxdepth 1 -type d | while read subdir; do
             ln -nfs "$subdir" ${repo}/$(basename "$subdir")
