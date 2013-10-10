@@ -131,6 +131,7 @@ upload() { # upload index files created by 'reindex'
         pushd work >/dev/null
         for file in $repo/*; do
             test -f $file || continue # skip the symlinks
+            test -s $file || fail "'$file' is empty"
             echo "PUTting $repo_url$file"
             echo "$repo_url$file" >>"$log"
             curl -X PUT -u "$(repo_credentials)" -f --data-binary @$file $repo_url$file >>"$log"
