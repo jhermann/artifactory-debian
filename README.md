@@ -111,7 +111,7 @@ sudo ./deb-index.sh setup "http://repo.example.com/artifactory/"
 export ARTIFACTORY_URL="http://repo.example.com/artifactory/"
 
 test -d artifactory-debian \
-    && ( cd artifactory-debian && git pull ) \
+    && ( cd artifactory-debian && git pull --ff-only ) \
     || git clone "https://github.com/jhermann/artifactory-debian.git"
 
 artifactory-debian/indexing/deb-index.sh refresh
