@@ -2,8 +2,9 @@ dput-webdav (1.2) noplat; urgency=low
 
   * Fixed issue with logging password-less credentials
   * Support for PGP signed changes added
+  * Support for netrc account configuration (closes #3)
 
- -- Juergen Hermann <jh@web.de>  Thu, 17 Oct 2013 17:37:34 +0200
+ -- Juergen Hermann <jh@web.de>  Thu, 17 Oct 2013 17:42:00 +0200
 
 dput-webdav (1.1) noplat; urgency=low
 
