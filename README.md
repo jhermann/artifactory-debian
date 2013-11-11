@@ -230,7 +230,8 @@ Also refer to `man dput.cf` for the common configuration options shared by all u
 
 ### Uploading to Bintray
 
-To use the `webdav` plugin for uploads to [Bintray](https://bintray.com/), add this configuration to your account:
+To use the `webdav` plugin for uploads to [Bintray](https://bintray.com/),
+add this configuration to your workstation's user account:
 
 * Extend your `~/.dput.cf` with this snippet:
 
