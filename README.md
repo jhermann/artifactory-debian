@@ -39,6 +39,14 @@ It offers a shell script that indexes a set of Debian repos located in Artifacto
 and a `dput` plugin that allows you to continue to use the standard Debian tool chain.
 
 The following diagram shows a typical setup and how the components interact.
+When a package maintainer uploads to Artifactory using `dput`,
+a `post_upload_command` remotely triggers a Jenkins job that pulls
+the repository configuration (from a local SCM) and the indexing code (from GitHub).
+That job then scans the available repositories using a read-only `davfs2` mount,
+creates new index files, and finally uploads those back into Artifactory.
+Users can then download the index files via `apt-get update` and install available packages as usual,
+without realizing they're accessing an Artifactory server, except for the specific `apt` source definition syntax
+(for details see [Installing Packages from Artifactory Repositories](#installing-packages-from-artifactory-repositories)).
 
 ![Configuration & Data Flow](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/data-flow.png)
 
