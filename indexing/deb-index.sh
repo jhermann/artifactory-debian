@@ -15,7 +15,7 @@ repo_url="${2:-$ARTIFACTORY_URL}" # e.g. http://repo.example.com/artifactory/
 : ${repo_url:?"You MUST provide a repository URL as a parameter or in ARTIFACTORY_URL"}
 repo_url="${repo_url%/}/$repo_name/"
 repo_mount="/mnt/artifactory-$repo_name"
-davfs_options="auto,noexec,ro,uid=davfs2,gid=users,file_mode=440,dir_mode=550"
+davfs_options="auto,_netdev,noexec,ro,uid=davfs2,gid=users,file_mode=440,dir_mode=550"
 confdir="$(pwd)" # $(cd $(dirname "$0") && pwd)
 
 
