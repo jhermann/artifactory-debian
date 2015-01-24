@@ -33,10 +33,9 @@ additional advantage of attribute management on top of storing the contained fil
 With that you can for example add cryptographic signatures of passed quality gates and the like,
 when a candidate release progresses through the pipeline.
 
-As long as [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613) remains unresolved,
-this project enables you to manage your Debian packages within Artifactory here and now.
-It offers a shell script that indexes a set of Debian repos located in Artifactory,
-and a `dput` plugin that allows you to continue to use the standard Debian tool chain.
+Starting with version 3.3, Artifactory can handle Debian repositories natively (see [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613)).
+This project enabled you to manage your Debian packages within Artifactory before that,
+and still provides the `dput` plugin for easy uploading to a repository using the standard Debian tool chain.
 
 The following diagram shows a typical setup and how the components interact.
 When a package maintainer uploads to Artifactory using `dput`,
