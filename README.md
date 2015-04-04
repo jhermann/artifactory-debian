@@ -3,9 +3,9 @@
 `artifactory-debian` offers tools to use [Artifactory](http://www.jfrog.com/) as a Debian (APT) repository,
 and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/artifactory-debian/wiki).
 
-| **dput-webdav** | **Ohloh** |
+| **dput-webdav** | **Open HUB** |
 |:-------------:|:-------------:|
-| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian) [![Jenkins Status](https://huschteguzzel.de/hudson/buildStatus/icon?job=dput-webdav)](https://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/) [![Open Tasks](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/todo.png)](https://huschteguzzel.de/hudson/view/jhermann/job/dput-webdav/tasks) | [![Ohloh stats](https://www.ohloh.net/p/artifactory-debian/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/artifactory-debian) |
+| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian) | [![Ohloh stats](https://www.ohloh.net/p/artifactory-debian/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/artifactory-debian) |
 
 **Table of Contents**
 - [Motivation and Overview](#motivation-and-overview)
@@ -33,9 +33,8 @@ additional advantage of attribute management on top of storing the contained fil
 With that you can for example add cryptographic signatures of passed quality gates and the like,
 when a candidate release progresses through the pipeline.
 
-Starting with version 3.3, Artifactory can handle Debian repositories natively (see [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613)).
-This project enabled you to manage your Debian packages within Artifactory before that,
-and still provides the `dput` plugin for easy uploading to a repository using the standard Debian tool chain.
+:mega: | Starting with version 3.3, Artifactory can handle Debian repositories natively (see [RTFACT-4613](https://www.jfrog.com/jira/browse/RTFACT-4613)). This project enabled you to manage your Debian packages within Artifactory before that, and still provides the `dput` plugin for easy uploading to a repository using the standard Debian tool chain.
+----: | :----
 
 The following diagram shows a typical setup and how the components interact.
 When a package maintainer uploads to Artifactory using `dput`,
