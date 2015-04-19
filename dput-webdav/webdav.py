@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=locally-disabled, star-args
+# pylint: disable=locally-disabled, bad-continuation
 """ WebDAV upload method for dput.
 
     Install to "/usr/share/dput/webdav.py".
 """
-from __future__ import with_statement
+from __future__ import with_statement, print_function
 
 import re
 import os
@@ -234,16 +234,16 @@ def _dav_put(filepath, url, login, progress=None):
 
                 resp = conn.getresponse()
                 if 200 <= resp.status <= 299:
-                    print " done."
+                    print(" done.")
                 #elif res.status == 401 and not auth_headers:
                     #print "need authentication."
                     #auth_headers = AuthHandlerHackAround(url, res.msg, pwman).get_auth_headers()
                 elif resp.status == 401:
-                    print " unauthorized."
+                    print(" unauthorized.")
                     raise urllib2.URLError("Upload failed as unauthorized (%s),"
                         " maybe wrong username or password?" % resp.reason)
                 else:
-                    print " failed."
+                    print(" failed.")
                     raise urllib2.URLError("Unexpected HTTP status %d %s" % (resp.status, resp.reason))
 
                 resp.read() # eat response body
@@ -359,12 +359,12 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
         # Special handling for integration test code
         if "integration-test" in cli_params:
             import pprint
-            print "upload arguments = ",
+            print("upload arguments = ", end="")
             pprint.pprint(dict((k, v) for k, v in locals().iteritems() if k in (
                 "fqdn", "login", "incoming", "files_to_upload", "debug", "dummy", "progress")))
-            print "host config = ",
+            print("host config = ", end="")
             pprint.pprint(host_config)
-            print "host arguments = ",
+            print("host arguments = ", end="")
             pprint.pprint(cli_params)
         else:
             # TODO: "bintray" REST API support
