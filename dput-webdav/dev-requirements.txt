@@ -1,0 +1,8 @@
+#
+# Development requirements
+#
+
+bpython==0.14.1
+yolk3k==0.8.6
+
+pylint==1.4.3
