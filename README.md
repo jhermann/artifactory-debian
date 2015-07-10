@@ -5,7 +5,7 @@ and deploy DEB packages to it. Also see [the wiki](https://github.com/jhermann/a
 
 | **dput-webdav** | **Open HUB** |
 |:-------------:|:-------------:|
-| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian) | [![Ohloh stats](https://www.ohloh.net/p/artifactory-debian/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/artifactory-debian) |
+| [![Travis Status](https://travis-ci.org/jhermann/artifactory-debian.png?branch=master)](https://travis-ci.org/jhermann/artifactory-debian)  [![Download](https://api.bintray.com/packages/jhermann/deb/dput-webdav/images/download.svg) ](https://bintray.com/jhermann/deb/dput-webdav/_latestVersion) | [![Ohloh stats](https://www.ohloh.net/p/artifactory-debian/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/artifactory-debian) |
 
 **Table of Contents**
 - [Motivation and Overview](#motivation-and-overview)
