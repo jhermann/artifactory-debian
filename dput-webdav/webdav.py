@@ -126,10 +126,10 @@ def _distro2repo(distro, repo_mappings):
 def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo_mappings=""):
     """Resolve the given `incoming` value to a working URL."""
     # Build fully qualified URL
-    scheme, netloc, path, params, query, anchor = urlparse.urlparse(incoming, scheme="http", allow_fragments=True)
+    scheme, netloc, path, matrix_params, query, anchor = urlparse.urlparse(incoming, scheme="http", allow_fragments=True)
     if scheme not in ("http", "https"):
         raise dputhelper.DputUploadFatalException("Unsupported URL scheme '%s'" % scheme)
-    url = urlparse.urlunparse((scheme, netloc or fqdn, path.rstrip('/') + '/', params, query, None))
+    url = urlparse.urlunparse((scheme, netloc or fqdn, path.rstrip('/') + '/', '', query, None))
 
     # Parse anchor to parameters
     url_params = dict(cgi.parse_qsl(anchor or '', keep_blank_values=True))
@@ -173,13 +173,15 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
             url.format
         except AttributeError:
             url = url % pkgdata # Python 2.5
+            matrix_params = matrix_params % pkgdata
         else:
             url = url.format(**pkgdata) # Python 2.6+
+            matrix_params = matrix_params.format(**pkgdata)
     except KeyError, exc:
         raise dputhelper.DputUploadFatalException("Unknown key (%s) in incoming templates '%s'" % (exc, incoming))
 
     trace("Resolved incoming to `%(url)s' params=%(params)r", url=url, params=url_params)
-    return url, url_params
+    return url, matrix_params, url_params
 
 
 def _url_connection(url, method, skip_host=False, skip_accept_encoding=False):
@@ -205,9 +207,11 @@ def _file_url(filepath, url):
     return urlparse.urljoin(url.rstrip('/') + '/', basename)
 
 
-def _dav_put(filepath, url, login, progress=None):
+def _dav_put(filepath, url, matrix_params, login, progress=None):
     """Upload `filepath` to given `url` (referring to a WebDAV collection)."""
     fileurl = _file_url(filepath, url)
+    if matrix_params:
+        fileurl += ';' + matrix_params
     sys.stdout.write("  Uploading %s: " % os.path.basename(filepath))
     sys.stdout.flush()
     size = os.path.getsize(filepath)
@@ -347,7 +351,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             changes_file = changes_file[0]
 
         # Prepare for uploading
-        incoming, repo_params = _resolve_incoming(fqdn, login, incoming, changes=changes_file,
+        incoming, matrix_params, repo_params = _resolve_incoming(fqdn, login, incoming, changes=changes_file,
             cli_params=cli_params, repo_mappings=host_config.get("repo_mappings", ""))
         log("INFO: Destination base URL is\n    %(url)s", url=urllib2.quote(incoming, safe=":/~;#"))
         repo_params.update(cli_params)
@@ -392,7 +396,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
                 if "simulate" in cli_params:
                     log("WOULD upload '%(filename)s'", filename=os.path.basename(filepath))
                 else:
-                    _dav_put(filepath, incoming, login, progress)
+                    _dav_put(filepath, incoming, matrix_params, login, progress)
     except (dputhelper.DputUploadFatalException, socket.error, urllib2.URLError, EnvironmentError), exc:
         log("FATAL: %(exc)s", exc=exc)
         sys.exit(1)
@@ -431,24 +435,29 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
 
     def test_resolve_incoming(self):
         """Test URL resolving."""
-        result, params = _resolve_incoming("repo.example.com:80", "", "incoming")
+        result, _, params = _resolve_incoming("repo.example.com:80", "", "incoming")
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
         self.assertEquals(params, {})
 
-        result, _ = _resolve_incoming("repo.example.com:80", "", "https:///incoming/")
+        result, _, _ = _resolve_incoming("repo.example.com:80", "", "https:///incoming/")
         self.assertEquals(result, "https://repo.example.com:80/incoming/")
 
-        result, _ = _resolve_incoming("repo.example.com:80", "", "//explicit/incoming/")
+        result, _, _ = _resolve_incoming("repo.example.com:80", "", "//explicit/incoming/")
         self.assertEquals(result, "http://explicit/incoming/")
 
-        result, _ = _resolve_incoming("repo.example.com:80", "", py25_format("//{fqdn}/incoming/"))
+        result, _, _ = _resolve_incoming("repo.example.com:80", "", py25_format("//{fqdn}/incoming/"))
         self.assertEquals(result, "http://repo.example.com:80/incoming/")
 
-        _, params = _resolve_incoming("", "", "incoming#a=1&b=c")
+        _, _, params = _resolve_incoming("", "", "incoming#a=1&b=c")
         self.assertEquals(params, dict(a="1", b="c"))
 
-        result, _ = _resolve_incoming("repo.example.com:80", "johndoe", py25_format("incoming/{loginuser}"))
+        result, _, _ = _resolve_incoming("repo.example.com:80", "johndoe", py25_format("incoming/{loginuser}"))
         self.assertEquals(result, "http://repo.example.com:80/incoming/johndoe/")
+
+        # Matrix parameters
+        result, matrix_params, _ = _resolve_incoming("repo.example.com:80", "", "/a/b;foo=bar;bar=foo")
+        self.assertEquals(result, "http://repo.example.com:80/a/b/")
+        self.assertEquals(matrix_params, "foo=bar;bar=foo")
 
         # Unsupported URL scheme
         self.assertRaises(dputhelper.DputUploadFatalException, _resolve_incoming, "", "", "file:///incoming/")
@@ -460,4 +469,5 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
 
 if __name__ == "__main__":
     print("artifactory webdav plugin tests")
+    #trace.debug = True
     unittest.main()
