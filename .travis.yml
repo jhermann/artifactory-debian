@@ -12,10 +12,10 @@ python:
     - "2.5"
 
 # command to install dependencies
+# ("dpkg-dev" omitted due to errors on Travis)
 install:
-    - "sudo apt-get install dput dh-make dpkg-dev"
+    - "sudo apt-get install dput dh-make"
     - "test $TRAVIS_PYTHON_VERSION = 2.5 || pip install -M 'pylint>=1.0'"
 
 # command to run tests
 script: "bash -x dput-webdav/test.sh"
-
