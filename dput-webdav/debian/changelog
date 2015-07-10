@@ -1,3 +1,9 @@
+dput-webdav (1.3.1) noplat; urgency=medium
+
+  * Handle 'source' architecture (remove it)
+
+ -- Juergen Hermann <jh@web.de>  Fri, 10 Jul 2015 16:24:20 +0200
+
 dput-webdav (1.3) noplat; urgency=medium
 
   * Matrix parameter support for builtin Artifactory repositories

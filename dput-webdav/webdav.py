@@ -153,6 +153,10 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
         pkgdata = dict([(key.lower().replace('-', '_'), val.strip())
             for key, val in rfc2822_parser.HeaderParser().parsestr(changes).items()
         ])
+        if 'architecture' in pkgdata:
+            architecture = set(pkgdata['architecture'].split())
+            architecture.discard('source')
+            pkgdata['architecture'] = ' '.join(sorted(architecture))
 
     # Extend changes metadata
     pkgdata["loginuser"] = login.split(':')[0]
