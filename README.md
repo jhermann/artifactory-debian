@@ -229,6 +229,17 @@ allow_unsigned_uploads = 1
 
 * Call `⍽ echo -n "«username»:«password»" >~/.artifactory.credentials; chmod 600 ~/.artifactory.credentials` with your credentials filled in (put a space in front to exclude the command from shell history).
 
+The above `~/.dput.cf` works with the indexing solution contained in this project.
+If by now you use the *built-in* Debian repository type of Artifactory,
+remove or comment the `post_upload_command` (it's not longer needed, indexing is automatic),
+and change the `incoming` value as follows:
+
+```ini
+incoming = http://{fqdn}/artifactory/debian-local/pool/{source}/{upstream};deb.architecture={architecture};deb.component=local;deb.distribution={repo}#mindepth=3&overwrite=0
+```
+
+Replace the `debian-local` path component if you named your repository differently.
+
 To fully understand the `dput` WebDAV plugin configuration and be able to customize it,
 read [WebDAV Plugin Configuration](https://github.com/jhermann/artifactory-debian/wiki/WebDAV-Plugin-Configuration).
 Also refer to `man dput.cf` for the common configuration options shared by all upload methods.
