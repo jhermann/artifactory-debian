@@ -1,3 +1,4 @@
 build
 dputhelper.py
 *.py[co]
+.venv
