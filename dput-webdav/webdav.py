@@ -154,9 +154,8 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
             for key, val in rfc2822_parser.HeaderParser().parsestr(changes).items()
         ])
         if 'architecture' in pkgdata:
-            architecture = set(pkgdata['architecture'].split())
-            architecture.discard('source')
-            pkgdata['architecture'] = ' '.join(sorted(architecture))
+            # This is a bit hackish, but Artiactory wants it that way
+            pkgdata['deb_architecture'] = ';deb.architecture='.join(pkgdata['architecture'].split())
 
     # Extend changes metadata
     pkgdata["loginuser"] = login.split(':')[0]
@@ -181,6 +180,7 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
         else:
             url = url.format(**pkgdata) # Python 2.6+
             matrix_params = matrix_params.format(**pkgdata)
+        matrix_params = matrix_params.replace(' ', '+')
     except KeyError, exc:
         raise dputhelper.DputUploadFatalException("Unknown key (%s) in incoming templates '%s'" % (exc, incoming))
 

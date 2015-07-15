@@ -235,7 +235,7 @@ remove or comment the `post_upload_command` (it's not longer needed, indexing is
 and change the `incoming` value as follows:
 
 ```ini
-incoming = http://{fqdn}/artifactory/debian-local/pool/{source}/{upstream};deb.architecture={architecture};deb.component=local;deb.distribution={repo}#mindepth=3&overwrite=0
+incoming = http://{fqdn}/artifactory/debian-local/pool/{source}/{upstream};deb.architecture={deb_architecture};deb.component=local;deb.distribution={repo}#mindepth=3&overwrite=0
 ```
 
 Replace the `debian-local` path component if you named your repository differently.
