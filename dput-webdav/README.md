@@ -1,6 +1,6 @@
 # ![Logo](https://raw.github.com/jhermann/artifactory-debian/master/doc/_static/artifactory-debian-logo.png) 'webdav' Upload Method for 'dput'
 
-![Bintray version](https://img.shields.io/bintray/v/jhermann/deb/dput-webdav.svg)
+[![Bintray version](https://img.shields.io/bintray/v/jhermann/deb/dput-webdav.svg)](https://bintray.com/jhermann/deb/dput-webdav/)
 
 [dput-webdav](https://freecode.com/projects/dput-webdav) is a "dput" upload method plugin with extended WebDAV support.
 It was written specifically with Artifactory and Bintray in mind.
