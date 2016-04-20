@@ -261,7 +261,7 @@ def _dav_put(filepath, url, matrix_params, login, progress=None):
             raise urllib2.URLError(exc)
 
 
-def _check_url(url, allowed, mindepth=0):
+def _check_url(url, login, allowed, mindepth=0):
     """Check if HTTP GET `url` returns a status code in `allowed`."""
     if mindepth:
         scheme, netloc, path, params, query, fragment = urlparse.urlparse(url)
@@ -270,8 +270,11 @@ def _check_url(url, allowed, mindepth=0):
 
     trace("Checking URL '%(url)s'", url=url)
     try:
-        # TODO: Check requests need to use login credentials
-        with closing(urllib2.urlopen(url)) as handle:
+        # Could use a HTTPBasicAuthHandler here, but meh!
+        # Should use 'requests', but dependency hell.
+        request = urllib2.Request(url)
+        request.add_header("Authorization", 'Basic %s' % login.encode('base64').replace('\n', '').strip())
+        with closing(urllib2.urlopen(request)) as handle:
             handle.read()
             code = handle.code
             if code not in allowed:
@@ -382,7 +385,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             # Check if .changes file already exists
             if not overwrite and changes_file:
                 try:
-                    _check_url(_file_url(changes_file, incoming), [404])
+                    _check_url(_file_url(changes_file, incoming), login, [404])
                 except urllib2.HTTPError, exc:
                     raise dputhelper.DputUploadFatalException("Overwriting existing changes at '%s' not allowed: %s" % (
                         _file_url(changes_file, incoming), exc))
@@ -390,7 +393,7 @@ def upload(fqdn, login, incoming, files_to_upload, # pylint: disable=too-many-ar
             # Check for existence of target path with minimal depth
             if mindepth:
                 try:
-                    _check_url(incoming, range(200, 300), mindepth=mindepth)
+                    _check_url(incoming, login, range(200, 300), mindepth=mindepth)
                 except urllib2.HTTPError, exc:
                     raise dputhelper.DputUploadFatalException("Required repository path '%s' doesn't exist: %s" % (
                         exc.filename, exc))
