@@ -2,3 +2,4 @@
 dput-webdav.substvars
 dput-webdav/
 files
+debhelper-build-stamp
