@@ -14,6 +14,7 @@ import netrc
 import socket
 import fnmatch
 import getpass
+import hashlib
 import httplib
 import urllib2
 import urlparse
@@ -192,15 +193,15 @@ def _url_connection(url, method, skip_host=False, skip_accept_encoding=False):
     """Create HTTP[S] connection for `url`."""
     scheme, netloc, path, params, query, _ = urlparse.urlparse(url)
     result = conn = (httplib.HTTPSConnection if scheme == "https" else httplib.HTTPConnection)(netloc)
-    conn.debuglevel = int(trace.debug)
     try:
+        conn.debuglevel = int(trace.debug)
         conn.putrequest(method, urlparse.urlunparse((None, None, path, params, query, None)), skip_host, skip_accept_encoding)
         conn.putheader("User-Agent", "dput")
         conn.putheader("Connection", "close")
-        conn = None
+        conn = None  # return open connections as result
     finally:
         if conn:
-            conn.close() # close in case of errors
+            conn.close()  # close in case of errors
 
     return result
 
@@ -220,6 +221,15 @@ def _dav_put(filepath, url, matrix_params, login, progress=None):
     sys.stdout.flush()
     size = os.path.getsize(filepath)
 
+    hashes = dict([(x, getattr(hashlib, x)()) for x in ("md5", "sha1", "sha256")])
+    with closing(open(filepath, 'r')) as handle:
+        while True:
+            data = handle.read(CHUNK_SIZE)
+            if not data:
+                break
+            for hashval in hashes.values():
+                hashval.update(data)
+
     with closing(open(filepath, 'r')) as handle:
         if progress:
             handle = dputhelper.FileWithProgress(handle, ptype=progress, progressf=sys.stdout, size=size)
@@ -230,6 +240,8 @@ def _dav_put(filepath, url, matrix_params, login, progress=None):
             try:
                 conn.putheader("Authorization", 'Basic %s' % login.encode('base64').replace('\n', '').strip())
                 conn.putheader("Content-Length", str(size))
+                for algo, hashval in hashes.items():
+                    conn.putheader("X-Checksum-" + algo.capitalize(), hashval.hexdigest())
                 conn.endheaders()
 
                 conn.debuglevel = 0
