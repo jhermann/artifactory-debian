@@ -42,7 +42,12 @@ if test $(ls -1 build/artifactory-debian-webdav-test*.changes | wc -l) -ne 1; th
     pushd build/deb >/dev/null
     export DEBFULLNAME="Tests R. Us"
     export DEBEMAIL="tests@example.com"
-    dh_make --yes --indep --createorig -p artifactory-debian-webdav-test_1.0
+    dh_make_opts="--indep --createorig -p artifactory-debian-webdav-test_1.0"
+    if dh_make --help | grep .--yes >/dev/null; then
+        dh_make --yes $dh_make_opts
+    else
+        echo | dh_make $dh_make_opts
+    fi
     dpkg-buildpackage -uc -us
     popd >/dev/null
 fi
