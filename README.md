@@ -189,7 +189,7 @@ or have a version of `dput` other than `0.9.6` installed,
 copy the plugin from GitHub using this command:
 
 ```sh
-sudo bash -c "umask 0133; curl -skS -o /usr/share/dput/webdav.py \
+sudo bash -c "umask 0133; curl -skSL -o /usr/share/dput/webdav.py \
     https://raw.github.com/jhermann/artifactory-debian/master/dput-webdav/webdav.py"
 ```
 
