@@ -14,7 +14,8 @@ python:
 # ("dpkg-dev" omitted due to errors on Travis)
 install:
     - "sudo apt-get install dput dh-make"
-    - "pip install -M 'pylint>=1.0'"
+    - "pip install -U pip"
+    - "pip install 'pylint>=1.0'"
 
 # command to run tests
 script: "bash -x dput-webdav/test.sh"
