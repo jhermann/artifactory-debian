@@ -139,12 +139,17 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
     pkgdata = {}
     if changes:
         try:
-            changes.read # pylint: disable=maybe-no-member
-        except AttributeError:
-            with closing(open(changes, "r")) as handle:
-                changes = handle.read()
-        else:
-            changes = changes.read() # pylint: disable=maybe-no-member
+            changes + ""
+        except TypeError:
+            try:
+                changes = changes.read() # pylint: disable=maybe-no-member
+            except AttributeError:
+                raise dputhelper.DputUploadFatalException(
+                    "Expected a file-like object with a change record, but got %r" % changes)
+        else:  # a string
+           if '\n' not in changes:
+                with closing(open(changes, "r")) as handle:
+                    changes = handle.read()
 
         if changes.startswith("-----BEGIN PGP SIGNED MESSAGE-----"):
             # Let someone else check this, we don't care a bit; gimme the data already
@@ -161,7 +166,9 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
     # Extend changes metadata
     pkgdata["loginuser"] = login.split(':')[0]
     if "version" in pkgdata:
-        pkgdata["upstream"] = re.split(r"[-~]", pkgdata["version"])[0]
+        pkgdata["epoch"], pkgdata["upstream"] = '', re.split(r"[-~]", pkgdata["version"])[0]
+        if ':' in pkgdata["upstream"]:
+            pkgdata["epoch"], pkgdata["upstream"] = pkgdata["upstream"].split(':', 1)
     pkgdata.update(dict(
         fqdn=fqdn, repo=_distro2repo(pkgdata.get("distribution", "unknown"), repo_mappings),
     ))
@@ -473,6 +480,16 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
         result, _, _ = _resolve_incoming("repo.example.com:80", "johndoe", py25_format("incoming/{loginuser}"))
         self.assertEquals(result, "http://repo.example.com:80/incoming/johndoe/")
 
+        # Version parsing
+        for version in (('', '1.2.3'), ('1', '2.3.4')):
+            changes = '\n'.join([
+                "Source: dput-webdav-version-test",
+                "Version: {0}{1}{2}".format(version[0], ':' if version[0] else '', version[1]),
+                ''])
+            result, _, _ = _resolve_incoming("repo.example.com:80", "",
+                py25_format("v/{epoch}/{upstream}"), changes=changes)
+            self.assertEquals(result, "http://repo.example.com:80/v/{0}/{1}/".format(*version))
+
         # Matrix parameters
         result, matrix_params, _ = _resolve_incoming("repo.example.com:80", "", "/a/b;foo=bar;bar=foo")
         self.assertEquals(result, "http://repo.example.com:80/a/b/")
@@ -487,6 +504,8 @@ class WebdavTest(unittest.TestCase): # pylint: disable=too-many-public-methods
 
 
 if __name__ == "__main__":
+    import mock
+
     print("artifactory webdav plugin tests")
     #trace.debug = True
     unittest.main()
