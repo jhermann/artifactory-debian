@@ -2,7 +2,7 @@
 # Development requirements
 #
 
-bpython==0.15
-yolk3k==0.8
+bpython==0.16
+yolk3k==0.9
 
-pylint==1.5.6
+pylint==1.6.5
