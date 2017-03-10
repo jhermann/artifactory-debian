@@ -168,10 +168,6 @@ Support for [dput-ng](http://people.debian.org/~paultag/dput-ng/) might be a goo
 
 **Package Installation**
 
-Download the latest
-[GitHub master build](https://huschteguzzel.de/hudson/job/dput-webdav/lastSuccessfulBuild/artifact/dput-webdav_1%7Emaster_all.deb)
-and install it with either `dpkg -i` or directly from your browser, using the *Ubuntu Software Center* or a similar tool.
-
 To install a **release version** via adding [Bintray](https://bintray.com/jhermann/deb/dput-webdav) as a package source, run these commands as `root`:
 
 ```sh
@@ -180,6 +176,10 @@ echo "deb http://dl.bintray.com/jhermann/deb /" \
 apt-get update
 apt-get install -o "APT::Get::AllowUnauthenticated=yes" dput-webdav
 ```
+
+If you need to build from source, change into the ``dput-webdav`` directory
+of this project, and call ``dpkg-buildpackage -uc -us``.
+The package files will be created in the project root, use ``dpkg -i …`` to install.
 
 
 **Manual Installation**
