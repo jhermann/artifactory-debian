@@ -1,3 +1,4 @@
+# Keep in sync with "dput-webdav/debian/source/options"!
 build
 dputhelper.py
 *.py[co]

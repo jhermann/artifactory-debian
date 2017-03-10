@@ -1,0 +1,5 @@
+# Keep in sync with "dput-webdav/.gitignore"!
+tar-ignore = "build"
+tar-ignore = "dputhelper.py"
+tar-ignore = "*.py[co]"
+tar-ignore = ".venv"
