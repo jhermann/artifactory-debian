@@ -1,3 +1,9 @@
+dput-webdav (1.5.0) noplat; urgency=low
+
+  * Added epoch awareness to version parsing (#8)
+
+ -- Juergen Hermann <jh@web.de>  Fri, 10 Mar 2017 10:44:45 +0100
+
 dput-webdav (1.4.0) noplat; urgency=low
 
   * Sending Artifactory "X-Checksum-*" headers
