@@ -229,6 +229,10 @@ allow_unsigned_uploads = 1
 
 * Call `⍽ echo -n "«username»:«password»" >~/.artifactory.credentials; chmod 600 ~/.artifactory.credentials` with your credentials filled in (put a space in front to exclude the command from shell history).
 
+  It's recommended to use your *“Encrypted Password”* instead of the cleartext password. That password starts with ``AP`` and is revealed after you **unlock** the *“User Profile”* page in the web UI.
+
+  Of course, you can also use the ``~/.netrc`` file, instead of a specific ``~/.artifactory.credentials`` one, as outlined in the next section.
+
 The above `~/.dput.cf` works with the indexing solution contained in this project.
 If by now you use the *built-in* Debian repository type of Artifactory,
 remove or comment the `post_upload_command` (it's not longer needed, indexing is automatic),
