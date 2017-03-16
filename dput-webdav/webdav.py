@@ -148,7 +148,7 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
                 raise dputhelper.DputUploadFatalException(
                     "Expected a file-like object with a change record, but got %r" % changes)
         else:  # a string
-           if '\n' not in changes:
+            if '\n' not in changes:
                 with closing(io.open(changes, 'r', encoding='utf-8')) as handle:
                     changes = handle.read()
 
