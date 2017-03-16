@@ -6,6 +6,7 @@
 """
 from __future__ import with_statement, print_function
 
+import io
 import re
 import os
 import sys
@@ -69,7 +70,7 @@ def _resolve_credentials(fqdn, login):
     else:
         if result.startswith("file:"):
             result = os.path.abspath(os.path.expanduser(result.split(':', 1)[1]))
-            with closing(open(result, "r")) as handle:
+            with closing(io.open(result, 'r', encoding='utf-8')) as handle:
                 result = handle.read().strip()
 
         try:
@@ -148,7 +149,7 @@ def _resolve_incoming(fqdn, login, incoming, changes=None, cli_params=None, repo
                     "Expected a file-like object with a change record, but got %r" % changes)
         else:  # a string
            if '\n' not in changes:
-                with closing(open(changes, "r")) as handle:
+                with closing(io.open(changes, 'r', encoding='utf-8')) as handle:
                     changes = handle.read()
 
         if changes.startswith("-----BEGIN PGP SIGNED MESSAGE-----"):
@@ -229,7 +230,7 @@ def _dav_put(filepath, url, matrix_params, login, progress=None):
     size = os.path.getsize(filepath)
 
     hashes = dict([(x, getattr(hashlib, x)()) for x in ("md5", "sha1", "sha256")])
-    with closing(open(filepath, 'r')) as handle:
+    with closing(io.open(filepath, 'r', encoding='utf-8')) as handle:
         while True:
             data = handle.read(CHUNK_SIZE)
             if not data:
@@ -237,7 +238,7 @@ def _dav_put(filepath, url, matrix_params, login, progress=None):
             for hashval in hashes.values():
                 hashval.update(data)
 
-    with closing(open(filepath, 'r')) as handle:
+    with closing(io.open(filepath, 'r', encoding='utf-8')) as handle:
         if progress:
             handle = dputhelper.FileWithProgress(handle, ptype=progress, progressf=sys.stdout, size=size)
         trace("HTTP PUT to URL: %s" % fileurl)
