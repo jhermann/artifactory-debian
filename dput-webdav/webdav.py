@@ -230,7 +230,7 @@ def _dav_put(filepath, url, matrix_params, login, progress=None):
     size = os.path.getsize(filepath)
 
     hashes = dict([(x, getattr(hashlib, x)()) for x in ("md5", "sha1", "sha256")])
-    with closing(io.open(filepath, 'r', encoding='utf-8')) as handle:
+    with closing(io.open(filepath, 'rb')) as handle:
         while True:
             data = handle.read(CHUNK_SIZE)
             if not data:
@@ -238,7 +238,7 @@ def _dav_put(filepath, url, matrix_params, login, progress=None):
             for hashval in hashes.values():
                 hashval.update(data)
 
-    with closing(io.open(filepath, 'r', encoding='utf-8')) as handle:
+    with closing(io.open(filepath, 'rb')) as handle:
         if progress:
             handle = dputhelper.FileWithProgress(handle, ptype=progress, progressf=sys.stdout, size=size)
         trace("HTTP PUT to URL: %s" % fileurl)
