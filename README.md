@@ -276,7 +276,7 @@ machine api.bintray.com
 
 As an example, the following is the log of the first release, where `dput-webdav` uploaded itself:
 
-```sh
+```console
 $ dput bintray dput-webdav*changes
 Uploading to bintray (via webdav to api.bintray.com):
   Uploading dput-webdav_1.0.dsc:  done.
