@@ -13,7 +13,7 @@ python:
 # command to install dependencies
 # ("dpkg-dev" omitted due to errors on Travis)
 install:
-    - "sudo apt-get install dput dh-make"
+    - "sudo apt-get install dput dh-make fakeroot"
     - "pip install -U pip"
     - "pip install 'pylint>=1.0'"
 
